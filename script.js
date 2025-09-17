@@ -54,7 +54,7 @@ const Tool = {
                 trainBtn: '美团火车票优惠券'
             };
             if (btnId.includes("_direct")) {
-                if (btnId.includes("dianping") || btnId.includes("jd")) {
+                if (btnId.includes("dianping") || btnId.includes("jd") || btnId.includes("allowance")) {
                     btn.innerHTML = '<span></span>直接跳转领券';
                 } else {
                     btn.innerHTML = '<span></span>直接跳转';
@@ -200,11 +200,23 @@ const App = {
                     Tool.setBtnLoading(`${couponKey}_direct`);
                     Tool.showToast('<span class="loading"></span>正在跳转...');
                     setTimeout(() => {
+                        // ============== START: MODIFIED BLOCK ==============
                         if (config.directUrl.startsWith("#小程序://")) {
-                            Tool.showToast(`请复制链接后在微信中打开: ${config.directUrl}`);
+                            // 尝试直接跳转 (在浏览器中会失败，但在特定环境如微信内置浏览器可能有效)
+                            window.location.href = config.directUrl;
+
+                            // 自动复制链接到剪贴板并提示用户
+                            Tool.copyToClipboard(config.directUrl)
+                                .then(() => {
+                                    Tool.showToast('浏览器跳转失败，已自动复制链接，请在微信中打开');
+                                })
+                                .catch(() => {
+                                    Tool.showToast('浏览器跳转失败，链接复制失败，请手动复制');
+                                });
                         } else {
                             window.open(config.directUrl, "_blank");
                         }
+                        // ============== END: MODIFIED BLOCK ==============
                         Tool.setBtnLoading(`${couponKey}_direct`, false);
                     }, 100);
                 });
