@@ -1,0 +1,561 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+body {
+    background-color: #f2f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.main-container {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 600px;
+    overflow: hidden;
+    padding: 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.header h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.header-icon {
+    color: #ffd700;
+    font-size: 28px;
+}
+
+.sub-title {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.btn-highlight {
+    background: linear-gradient(to right, #ff6b6b, #ff3838);
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 0 auto;
+    box-shadow: 0 4px 10px rgba(255, 107, 107, 0.4);
+    transition: all 0.3s;
+}
+
+.btn-highlight:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 15px rgba(255, 107, 107, 0.5);
+}
+
+.link-parser {
+    margin-bottom: 25px;
+}
+
+#pasteBox {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: all 0.3s;
+    outline: none;
+    margin-bottom: 15px;
+}
+
+#pasteBox:focus {
+    border-color: #4a86e8;
+    box-shadow: 0 0 0 3px rgba(74, 134, 232, 0.2);
+}
+
+#pasteBox::placeholder {
+    color: #999;
+}
+
+.btn-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.btn {
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-paste {
+    background: linear-gradient(to right, #5bc8fa, #40bef8);
+    color: white;
+}
+
+.btn-go {
+    background: linear-gradient(to right, #4a86e8, #2575fc);
+    color: white;
+}
+
+.btn-clear {
+    background: linear-gradient(to right, #f44878, #f9215e);
+    color: white;
+}
+
+.btn-home {
+    background: linear-gradient(to right, #3eca61, #3eca61);
+    color: white;
+    width: 100%;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.input-note {
+    text-align: center;
+    color: 666;
+    font-size: 13px;
+    margin-top: 10px;
+}
+
+.coupon-panel {
+    margin-bottom: 15px;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.coupon-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    background: #f8f9fa;
+    cursor: pointer;
+    font-weight: 600;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.coupon-panel-header:hover {
+    background: #e9ecef;
+}
+
+.coupon-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.panel-icon {
+    transition: transform 0.3s ease;
+}
+
+.coupon-panel-content {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 15px;
+    background: white;
+    transition: all 0.4s ease;
+}
+
+.coupon-panel-content.expanded {
+    max-height: 1000px;
+    padding: 15px;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.panel-icon.expanded {
+    transform: rotate(180deg);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.coupon-card {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eee;
+    transform: scale(0.95);
+    opacity: 0;
+    animation: cardAppear 0.5s ease forwards;
+}
+
+.coupon-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.coupon-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+@keyframes cardAppear {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.coupon-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 修复图标显示问题 */
+.coupon-icon {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    font-size: 14px;
+    position: relative;
+}
+
+.coupon-icon i {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.coupon-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.three-buttons {
+    grid-template-columns: 1fr 1fr 1fr !important;
+}
+
+.single-button {
+    grid-column: 1 / span 2;
+}
+
+.btn-direct {
+    background: linear-gradient(to right, #ff4b2b, #ff416c);
+    color: white;
+}
+
+.btn-code {
+    background: linear-gradient(to right, #56ab2f, #a8e063);
+    color: white;
+}
+
+.btn-copy {
+    background: linear-gradient(to right, #1a8fe3, #2d68ff);
+    color: white;
+}
+
+.btn-dianping {
+    background: linear-gradient(to right, #1a8fe3, #2d68ff);
+    color: white;
+}
+
+.btn-jd {
+    background: linear-gradient(to right, #e33333, #ff3333);
+    color: white;
+}
+
+.coupon-text {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 13px;
+    background-color: #f9f9f9;
+    color: #555;
+    margin-bottom: 10px;
+    word-break: break-all;
+}
+
+.note {
+    color: #666;
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.service-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.btn-didi {
+    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    color: white;
+}
+
+.btn-t3 {
+    background: linear-gradient(to right, #9c27b0, #673ab7);
+    color: white;
+}
+
+.btn-hxz {
+    background: linear-gradient(to right, #ff9500, #ff5e3a);
+    color: white;
+}
+
+.btn-tc {
+    background: linear-gradient(to right, #00b894, #00a085);
+    color: white;
+}
+
+.btn-meituan-flight {
+    background: linear-gradient(to right, #1a8fe3, #2d68ff);
+    color: white;
+}
+
+.btn-meituan-train {
+    background: linear-gradient(to right, #6c5ce7, #a29bfe);
+    color: white;
+}
+
+.btn-flow {
+    background: linear-gradient(to right, #ff5000, #ff6a00);
+    color: white;
+}
+
+/* 模态框样式 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background-color: white;
+    padding: 25px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 300px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.3s ease;
+}
+
+.close:hover {
+    color: #333;
+}
+
+.qr-code {
+    margin: 15px 0;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+    display: inline-block;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.qr-code img {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    border-radius: 5px;
+}
+
+/* Toast提示 */
+.toast {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    z-index: 1001;
+    display: none;
+    font-size: 14px;
+    animation: toastFadeIn 0.3s ease;
+}
+
+@keyframes toastFadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -40%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+.toast.show {
+    display: block;
+    animation: fadeInOut 2.5s forwards;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; display: none; }
+}
+
+.loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .main-container {
+        padding: 15px;
+    }
+    
+    .btn-group {
+        grid-template-columns: 1fr;
+    }
+    
+    .service-group {
+        grid-template-columns: 1fr;
+    }
+    
+    .coupon-actions {
+        grid-template-columns: 1fr;
+    }
+    
+    .three-buttons {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    
+    .header h2 {
+        font-size: 20px;
+    }
+    
+    .btn {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+    
+    .coupon-panel-content.expanded {
+        max-height: 2000px; /* 增加最大高度以适应移动设备 */
+    }
+}
