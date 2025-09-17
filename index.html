@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美团外卖优惠券领券工具</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- 全局提示组件 -->
+    <div class="toast jump" id="globalToast"><span class="loading"></span>正在跳转...</div>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- 头部信息 -->
+        <div class="header">
+            <h2><i class="fas fa-lemon header-icon"></i> Lemon一站式神券合集</h2>
+            <p class="sub-title">公众号: Lemon羊毛日记</p>
+            <button class="btn btn-highlight" id="qrCodeBtn">
+                <i class="fas fa-qrcode"></i> 扫码直达一手线报
+            </button>
+        </div>
+
+        <!-- 核心功能：店铺链接解析 -->
+        <div class="link-parser">
+            <input type="text" id="pasteBox" placeholder="请粘贴外卖店铺链接">
+            <div class="btn-group">
+                <button class="btn btn-paste" id="pasteBtn"><i class="fas fa-paste"></i> 粘贴</button>
+                <button class="btn btn-go" id="goBtn"><i class="fas fa-external-link-alt"></i> Go 跳转领券</button>
+                <button class="btn btn-clear" id="clearBtn"><i class="fas fa-eraser"></i> 清空</button>
+            </div>
+            <button class="btn btn-home" id="homeBtn"><i class="fas fa-home"></i> 进入美团外卖主页</button>
+            <p class="input-note">进入需要下单的店铺，复制链接粘贴到上方领券</p>
+        </div>
+
+        <!-- 所有模块统一使用折叠面板 -->
+        <div class="coupon-modules">
+            <!-- 美团外卖折叠面板 -->
+            <div class="coupon-panel">
+                <div class="coupon-panel-header" data-target="meituan-content">
+                    <div class="coupon-panel-title"><i class="fas fa-utensils"></i> 美团外卖优惠券</div>
+                    <span class="panel-icon">▼</span>
+                </div>
+                <div class="coupon-panel-content" id="meituan-content">
+                    <!-- 美团优惠券卡片 -->
+                    <div class="coupon-card" id="coupon1">
+                        <div class="coupon-title"><i class="fas fa-gift coupon-icon" style="background: #ff7e5f; color: white;"></i> 美团每日外卖红包</div>
+                        <div class="coupon-actions">
+                            <button class="btn btn-direct" id="coupon1_direct">直接跳转</button>
+                            <button class="btn btn-copy" id="coupon1_copyopen"><span></span>密令</button>
+                        </div>
+                        <div class="coupon-text" id="coupon1_text" aria-live="polite">点击密令按钮自动复制</div>
+                        <div class="note">点击"直接跳转"前往领券，或复制密令到美团APP使用</div>
+                    </div>
+
+                    <div class="coupon-card" id="coupon2">
+                        <div class="coupon-title"><i class="fas fa-crown coupon-icon" style="background: #ff4b2b; color: white;"></i> 美团品质外卖红包</div>
+                        <div class="coupon-actions">
+                            <button class="btn btn-direct" id="coupon2_direct">直接跳转</button>
+                            <button class="btn btn-copy" id="coupon2_copyopen">密令</button>
+                        </div>
+                        <div class="coupon-text" id="coupon2_text" aria-live="polite">点击密令按钮自动复制</div>
+                        <div class="note">点击"直接跳转"前往领券，或复制密令到美团APP使用</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 大众点评优惠券模块 -->
+            <div class="coupon-panel">
+                <div class="coupon-panel-header" data-target="dianping-content">
+                    <div class="coupon-panel-title"><i class="fas fa-star"></i> 大众点评优惠券</div>
+                    <span class="panel-icon">▼</span>
+                </div>
+                <div class="coupon-panel-content" id="dianping-content">
+                    <!-- 大众点评优惠券卡片 -->
+                    <div class="coupon-card dianping-card" id="dianping1">
+                        <div class="coupon-title"><i class="fas fa-ticket-alt coupon-icon" style="background: #1a8fe3; color: white;"></i> 大众点评外卖优惠券</div>
+                        <div class="coupon-actions">
+                            <button class="btn btn-direct btn-dianping single-button" id="dianping1_direct"><span></span>直接跳转领券</button>
+                        </div>
+                        <div class="note">各类外卖平台优惠券，下单更划算</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 美团津贴折叠面板 -->
+            <div class="coupon-panel">
+                <div class="coupon-panel-header" data-target="meituan-allowance-content">
+                    <div class="coupon-panel-title"><i class="fas fa-money-bill-wave"></i> 美团津贴优惠</div>
+                    <span class="panel-icon">▼</span>
+                </div>
+                <div class="coupon-panel-content" id="meituan-allowance-content">
+                    <!-- 美团津贴卡片 -->
+                    <div class="coupon-card" id="allowance1">
+                        <div class="coupon-title"><i class="fas fa-utensils coupon-icon" style="background: #ff9500; color: white;"></i> 美团外卖津贴+免配</div>
+                        <div class="coupon-actions">
+                            <button class="btn btn-direct single-button" id="allowance1_direct">直接跳转领券</button>
+                        </div>
+                        <div class="note">日常专享津贴，最高减5元，点击领取</div>
+                    </div>
+
+                    <div class="coupon-card" id="allowance2">
+                        <div class="coupon-title"><i class="fas fa-coffee coupon-icon" style="background: #ff5e3a; color: white;"></i> 美团奶茶津贴+免配</div>
+                        <div class="coupon-actions">
+                            <button class="btn btn-direct single-button" id="allowance2_direct">直接跳转领券</button>
+                        </div>
+                        <div class="note">各大奶茶品牌专享，免运费，津贴叠加后最高减5</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 美食酒店优惠券模块 -->
+            <div class="coupon-panel">
+                <div class="coupon-panel-header" data-target="meituan-group-content">
+                    <div class="coupon-panel-title"><i class="fas fa-hotel"></i> 美食酒店优惠券</div>
+                    <span class="panel-icon">▼</span>
+                </div>
+                <div class="coupon-panel-content" id="meituan-group-content">
+                    <!-- 美团酒店券卡片 -->
+                    <div class="coupon-card" id="group1">
+                        <div class="coupon-title"><i class="fas fa-bed coupon-icon" style="background: #9c27b0; color: white;"></i> 美团酒店券</div>
+                        <div class="coupon-actions">
+                            <button class="btn btn-direct single-button" id="group1_direct">直接跳转领券</button>
+                        </div>
+                        <div class="note">全国连锁酒店通用券，预订酒店更优惠</div>
+                    </div>
+
+                    <div class="coupon-card" id="group2">
+                        <div class="coupon-title"><i class="fas fa-utensils coupon-icon" style="background: #673ab7; color: white;"></i> 美食团购优惠券</div>
+                        <div class="coupon-actions">
+                            <button class="btn btn-direct single-button" id="group2_direct">直接跳转领券</button>
+                        </div>
+                        <div class="note">美食团购专属优惠，团购便宜省心</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 淘宝闪购折叠面板 -->
+            <div class="coupon-panel">
+                <div class="coupon-panel-header" data-target="taobao-content">
+                    <div class="coupon-panel-title"><i class="fas fa-bolt"></i> 淘宝闪购优惠券</div>
+                    <span class="panel-icon">▼</span>
+                </div>
+                <div class="coupon-panel-content" id="taobao-content">
+                    <!-- 淘宝优惠券卡片 -->
+                    <div class="coupon-card" id="tb1">
+                        <div class="coupon-title"><i class="fas fa-gift coupon-icon" style="background: #ff5000; color: white;"></i> 淘宝闪购每日大额神券</div>
+                        <div class="coupon-actions three-buttons">
+                            <button class="btn btn-direct" id="tb1_direct"><span></span>直接跳转</button>
+                            <button class="btn btn-code" id="tb1_showcode">口令</button>
+                            <button class="btn btn-copy" id="tb1_copyopen"><span></span>密令</button>
+                        </div>
+                        <div class="coupon-text" id="tb1_text" aria-live="polite">点击密令按钮自动复制</div>
+                        <div class="note">点击"直接跳转"前往领券，或复制密令到淘宝APP使用</div>
+                    </div>
+
+                    <div class="coupon-card" id="tb2">
+                        <div class="coupon-title"><i class="fas fa-coffee coupon-icon" style="background: #ff6a00; color: white;"></i> 淘宝闪购每日抽31-30支付券</div>
+                        <div class="coupon-actions three-buttons">
+                            <button class="btn btn-direct" id="tb2_direct"><span></span>直接跳转</button>
+                            <button class="btn btn-code" id="tb2_showcode">口令</button>
+                            <button class="btn btn-copy" id="tb2_copyopen">密令</button>
+                        </div>
+                        <div class="coupon-text" id="tb2_text" aria-live="polite">点击密令按钮自动复制</div>
+                        <div class="note">点击"直接跳转"前往领券，或复制密令到淘宝APP使用</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 京东外卖优惠券模块 -->
+            <div class="coupon-panel">
+                <div class="coupon-panel-header" data-target="jd-content">
+                    <div class="coupon-panel-title"><i class="fas fa-shipping-fast"></i> 京东外卖优惠券</div>
+                    <span class="panel-icon">▼</span>
+                </div>
+                <div class="coupon-panel-content" id="jd-content">
+                    <!-- 京东外卖优惠券卡片 -->
+                    <div class="coupon-card jd-card" id="jd2">
+                        <div class="coupon-title"><i class="fas fa-ticket-alt coupon-icon" style="background: #e33333; color: white;"></i> 京东外卖日常满减优惠券</div>
+                        <div class="coupon-actions">
+                            <button class="btn btn-direct btn-jd single-button" id="jd2_direct">直接跳转领券</button>
+                        </div>
+                        <div class="note">全品类通用，满15减10</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 打车领券折叠面板 -->
+            <div class="coupon-panel">
+                <div class="coupon-panel-header" data-target="taxi-content">
+                    <div class="coupon-panel-title"><i class="fas fa-taxi"></i> 打车领券</div>
+                    <span class="panel-icon">▼</span>
+                </div>
+                <div class="coupon-panel-content" id="taxi-content">
+                    <div class="service-group">
+                        <button class="btn btn-didi" id="didiBtn">滴滴打车领券</button>
+                        <button class="btn btn-t3" id="t3Btn">T3打车领券</button>
+                        <button class="btn btn-hxz" id="hxzBtn">花小猪打车领券</button>
+                        <button class="btn btn-tc" id="tcBtn">同程打车领券</button>
+                    </div>
+                    <div class="note" style="margin-top: 12px;">点击对应按钮领取各平台打车优惠券，新用户优惠更多</div>
+                </div>
+            </div>
+
+            <!-- 美团机票火车票优惠券模块 -->
+            <div class="coupon-panel">
+                <div class="coupon-panel-header" data-target="ticket-content">
+                    <div class="coupon-panel-title"><i class="fas fa-ticket-alt"></i> 美团机票火车票优惠券</div>
+                    <span class="panel-icon">▼</span>
+                </div>
+                <div class="coupon-panel-content" id="ticket-content">
+                    <div class="service-group">
+                        <button class="btn btn-meituan-flight" id="flightBtn">美团机票优惠券</button>
+                        <button class="btn btn-meituan-train" id="trainBtn">美团火车票优惠券</button>
+                    </div>
+                    <div class="note" style="margin-top: 12px;">美团平台机票火车票专属优惠，出行更省钱</div>
+                </div>
+            </div>
+
+            <!-- 其他服务折叠面板 -->
+            <div class="coupon-panel">
+                <div class="coupon-panel-header" data-target="other-services-content">
+                    <div class="coupon-panel-title"><i class="fas fa-cog"></i> 其他服务</div>
+                    <span class="panel-icon">▼</span>
+                </div>
+                <div class="coupon-panel-content" id="other-services-content">
+                    <div class="service-group">
+                        <button class="btn btn-flow single-button" id="flowBtn"><span></span>流量卡办理</button>
+                    </div>
+                    <div class="note" style="margin-top: 12px;">更多实用服务，持续更新中...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 二维码模态框 -->
+    <div id="qrModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>扫码关注一手线报</h2>
+            <div class="qr-code">
+                <img src="logo.png" alt="公众号二维码">
+            </div>
+            <p>扫描二维码关注公众号，获取最新优惠信息</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
