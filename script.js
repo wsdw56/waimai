@@ -53,7 +53,13 @@ const Tool = {
                 flightBtn: '美团机票优惠券',
                 trainBtn: '美团火车票优惠券'
             };
-            if (btnId.includes("_direct")) {
+            // ============== START: MODIFIED BLOCK ==============
+            if (btnId.includes("allowance") && btnId.includes("_wechat_direct")) {
+                btn.innerHTML = '<span></span>微信直接跳转';
+            } else if (btnId.includes("allowance") && btnId.includes("_browser_copy")) {
+                btn.innerHTML = '<span></span>浏览器点击复制';
+            // ============== END: MODIFIED BLOCK ==============
+            } else if (btnId.includes("_direct")) {
                 if (btnId.includes("dianping") || btnId.includes("jd") || btnId.includes("allowance")) {
                     btn.innerHTML = '<span></span>直接跳转领券';
                 } else {
@@ -73,8 +79,8 @@ const Config = {
         coupon1: { directUrl: "https://click.meituan.com/t?t=1&c=2&p=eLhY-b9z3K4g", copyOpenText: "1%复制信息#%打开团App http://¥gJZGVkOTcwZDI¥一起领" },
         coupon2: { directUrl: "https://click.meituan.com/t?t=1&c=2&p=PhNn479zCEMo", copyOpenText: "1%复制信息#%打开团App http://¥iiNTdjOWQzMTc¥一起领" },
         dianping1: { directUrl: "https://market.waimai.meituan.com/gd2/wm/4i838U?wm_ctype=dp_iphone&p=eLhY-b9z3K4g&t=1&c=2" },
-        allowance1: { directUrl: "#小程序://美团外卖丨外卖美食奶茶咖啡水果/9zETxgS7ZOwXu2q" },
-        allowance2: { directUrl: "#小程序://美团外卖丨外卖美食奶茶咖啡水果/BHBX7pIDglpeV5J" },
+        // ============== START: MODIFIED BLOCK (Removed allowance1 and allowance2) ==============
+        // ============== END: MODIFIED BLOCK ==============
         group1: { directUrl: "https://click.meituan.com/t?t=1&c=2&p=luGh6r9zMj5J" },
         group2: { directUrl: "https://click.meituan.com/t?t=1&c=2&p=AQ2q4L9zt-4m" },
         tb1: { directUrl: "https://market.m.taobao.com/app/starlink/wakeup-transit/pages/download?star_id=8644&slk_force_set_request=true&scene=bf7d31dac823400abe7a6afae443acff", codeText: "淘宝闪购搜:00045", copyOpenText: "￥pENq4HXO8pM￥/ HU7405" },
@@ -101,6 +107,7 @@ const App = {
         App.initLinkParser();
         App.initCouponPanels();
         App.initCoupons();
+        App.initAllowanceCards(); // ============== ADDED THIS LINE ==============
         App.initTaxi();
         App.initTickets();
         App.initOtherServices();
@@ -200,23 +207,7 @@ const App = {
                     Tool.setBtnLoading(`${couponKey}_direct`);
                     Tool.showToast('<span class="loading"></span>正在跳转...');
                     setTimeout(() => {
-                        // ============== START: MODIFIED BLOCK ==============
-                        if (config.directUrl.startsWith("#小程序://")) {
-                            // 尝试直接跳转 (在浏览器中会失败，但在特定环境如微信内置浏览器可能有效)
-                            window.location.href = config.directUrl;
-
-                            // 自动复制链接到剪贴板并提示用户
-                            Tool.copyToClipboard(config.directUrl)
-                                .then(() => {
-                                    Tool.showToast('已自动复制链接，请在微信中粘贴打开');
-                                })
-                                .catch(() => {
-                                    Tool.showToast('浏览器跳转失败，链接复制失败，请手动复制');
-                                });
-                        } else {
-                            window.open(config.directUrl, "_blank");
-                        }
-                        // ============== END: MODIFIED BLOCK ==============
+                        window.open(config.directUrl, "_blank");
                         Tool.setBtnLoading(`${couponKey}_direct`, false);
                     }, 100);
                 });
@@ -263,6 +254,54 @@ const App = {
             }
         });
     },
+
+    // ============== START: ADDED NEW FUNCTION ==============
+    initAllowanceCards: () => {
+        const allowanceConfig = {
+            allowance1: {
+                wechatUrl: "https://a.c1nb.cn/Ru8Uw",
+                browserCopyText: "#小程序://美团外卖丨外卖美食奶茶咖啡水果/9zETxgS7ZOwXu2q"
+            },
+            allowance2: {
+                wechatUrl: "https://a.c1nb.cn/Rt9GF",
+                browserCopyText: "#小程序://美团外卖丨外卖美食奶茶咖啡水果/BHBX7pIDglpeV5J"
+            }
+        };
+
+        Object.keys(allowanceConfig).forEach(key => {
+            const config = allowanceConfig[key];
+            const wechatBtn = document.getElementById(`${key}_wechat_direct`);
+            const browserBtn = document.getElementById(`${key}_browser_copy`);
+
+            if (wechatBtn) {
+                wechatBtn.addEventListener("click", () => {
+                    const btnId = wechatBtn.id;
+                    Tool.setBtnLoading(btnId);
+                    Tool.showToast('<span class="loading"></span>正在跳转...');
+                    setTimeout(() => {
+                        window.open(config.wechatUrl, "_blank");
+                        Tool.setBtnLoading(btnId, false);
+                    }, 100);
+                });
+            }
+
+            if (browserBtn) {
+                browserBtn.addEventListener("click", () => {
+                    const btnId = browserBtn.id;
+                    Tool.setBtnLoading(btnId);
+                    Tool.copyToClipboard(config.browserCopyText)
+                        .then(() => Tool.showToast('已自动复制链接，请在微信中打开'))
+                        .catch(() => Tool.showToast('复制失败，请手动复制'))
+                        .finally(() => {
+                            setTimeout(() => {
+                                Tool.setBtnLoading(btnId, false);
+                            }, 800);
+                        });
+                });
+            }
+        });
+    },
+    // ============== END: ADDED NEW FUNCTION ==============
     
     initTaxi: () => {
         document.getElementById("didiBtn").addEventListener("click", () => { Tool.setBtnLoading("didiBtn"); Tool.showToast('<span class="loading"></span>正在跳转...'); setTimeout(() => { window.open(Config.taxiUrls.didi, "_blank"); Tool.setBtnLoading("didiBtn", false); }, 100); });
