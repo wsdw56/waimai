@@ -81,7 +81,7 @@ const Config = {
         dianping1: { directUrl: "https://market.waimai.meituan.com/gd2/wm/4i838U?wm_ctype=dp_iphone&p=eLhY-b9z3K4g&t=1&c=2" },
         // ============== START: MODIFIED BLOCK (Removed allowance1 and allowance2) ==============
         // ============== END: MODIFIED BLOCK ==============
-        group1: { directUrl: "https://click.meituan.com/t?t=1&c=2&p=luGh6r9zMj5J" },
+        group1: { directUrl: "https://click.meituan.com/t?t=1&c=2&p=luGf6r9zMj5J" },
         group2: { directUrl: "https://click.meituan.com/t?t=1&c=2&p=AQ2q4L9zt-4m" },
         tb1: { directUrl: "https://market.m.taobao.com/app/starlink/wakeup-transit/pages/download?star_id=8644&slk_force_set_request=true&scene=bf7d31dac823400abe7a6afae443acff", codeText: "淘宝闪购搜:00045", copyOpenText: "￥pENq4HXO8pM￥/ HU7405" },
         tb2: { directUrl: "https://m.duanqu.com/?_ariver_appid=8251537&page=plugin-private%3A%2F%2F2021004134685665%2Fpages%2Fcompose-reduce-guide%2Findex%3Ffrom%3Dminiapp.taobao%26channelInfo%3D%7B%22subSubChannel%22%3A%22miniapp.taobao.et%22%7D%26alsc_exsrc%3DES0006299852%26scene%3Db1305707a8a14bbea7b2e68730e1887c", codeText: "淘宝闪购搜:00049", copyOpenText: "￥LjII4HXp2Vh￥/ HU7405" },
