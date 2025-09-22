@@ -85,7 +85,7 @@ const Config = {
         group2: { directUrl: "https://click.meituan.com/t?t=1&c=2&p=AQ2q4L9zt-4m" },
         tb1: { directUrl: "https://market.m.taobao.com/app/starlink/wakeup-transit/pages/download?star_id=8644&slk_force_set_request=true&scene=bf7d31dac823400abe7a6afae443acff", codeText: "淘宝闪购搜:00045", copyOpenText: "￥pENq4HXO8pM￥/ HU7405" },
         tb2: { directUrl: "https://m.duanqu.com/?_ariver_appid=8251537&page=plugin-private%3A%2F%2F2021004134685665%2Fpages%2Fcompose-reduce-guide%2Findex%3Ffrom%3Dminiapp.taobao%26channelInfo%3D%7B%22subSubChannel%22%3A%22miniapp.taobao.et%22%7D%26alsc_exsrc%3DES0006299852%26scene%3Db1305707a8a14bbea7b2e68730e1887c", codeText: "淘宝闪购搜:00049", copyOpenText: "￥LjII4HXp2Vh￥/ HU7405" },
-        jd1: { directUrl: "openapp.jdmobile://virtual?params=%7B%22category%22%3A%22jump%22%2C%22des%22%3A%22m%22%2C%22sourceValue%22%3A%22babel-act%22%2C%22sourceType%22%3A%22babel%22%2C%22url%22%3A'https%3A%2F%2Fapi.m.jd.com%2Fapi%3FfunctionId%3DgetUnionFreeCoupon%26appid%3Du_h5%26loginType%3D2%26cu%3Dtrue%26rid%3D10109%26utm_source%3Dlianmeng__2__kong%26utm_medium%3Djingfen%26utm_campaign%3Dt_2034295816_%26utm_term%3Dd16ebeed406f4651b53b269cb86a0e6b%26client%3D%26clientVersion%3D1.0.0%26body%3D%7B%22couponUrl%22%3A%22SkMuHlhBSxQzEUVCUBM3H0UVShE9FUURUUQuEUUWSh1yFBkTERRsEh4TCBRyFxgRFhFmExsSHAlyCgYPSlAySgZNUUkyCgYP%22%2C%22source%22%3A20118%7D'%2C%22M_sourceFrom%22%3A%22h5auto%22%2C%22msf_type%22%3A%22auto%22%7D" },
+        jd1: { directUrl: "https://u.jd.com/PDpPqN0" },
         jd2: { directUrl: "https://u.jd.com/PrdPOtn" }
     },
     taxiUrls: {
