@@ -1,19 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <title>正在打开美团外卖...</title>
-  <script>
-    // 跳转目标
-    var target = "weixin://dl/business/?appid=wx2c348cf579062e56&path=pages/web-view/web-view&p=eLhY-b9z3K4g&c=2&type=DIRECT&webviewUrl=https://market.waimai.meituan.com/gundam/GmBRE6Am/index.html
-";
-    // 页面加载后立即跳转
-    window.onload = function() {
-      window.location.href = target;
-    };
-  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    button {
+      background: #07c160;
+      color: white;
+      font-size: 18px;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <p>正在打开美团外卖小程序，请稍候...</p>
+  <div>
+    <p>如果没有自动打开，请点击按钮进入 👇</p>
+    <button id="openBtn">打开美团外卖小程序</button>
+  </div>
+
+  <script>
+    const target = "weixin://dl/business/?appid=wx2c348cf579062e56&path=pages/web-view/web-view&p=eLhY-b9z3K4g&c=2&type=DIRECT&webviewUrl=https://market.waimai.meituan.com/gundam/GmBRE6Am/index.html";
+
+    // 延时执行，避免被微信内核阻止
+    window.onload = function() {
+      setTimeout(() => {
+        window.location.href = target;
+      }, 1200);
+    };
+
+    // 用户手动点击可再次触发
+    document.getElementById("openBtn").addEventListener("click", () => {
+      window.location.href = target;
+    });
+  </script>
 </body>
 </html>
