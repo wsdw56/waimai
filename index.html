@@ -76,28 +76,33 @@
                 </div>
             </div>
 
-            <!-- ============== START: NEWLY ADDED BLOCK ============== -->
+            <!-- 11月免单活动超级跳转 -->
             <div class="coupon-panel">
                 <div class="coupon-panel-header" data-target="november-event-content">
-                    <div class="coupon-panel-title"><i class="panel-title-bar taxi-green"></i><i class="fas fa-bolt"></i> (新增)11月免单活动超级跳转</div>
+                    <div class="coupon-panel-title"><i class="panel-title-bar meituan-blue"></i><i class="fas fa-bolt"></i> (新增)11月免单活动超级跳转</div>
                     <span class="panel-icon">▼</span>
                 </div>
                 <div class="coupon-panel-content" id="november-event-content">
+                    <!-- ============== START: MODIFIED BLOCK ============== -->
                     <div class="coupon-card" id="meituanSuperJump">
-                        <div class="coupon-title"><i class="fas fa-rocket coupon-icon"></i> (新增)10:30美团超级跳转</div>
+                        <div class="coupon-title"><i class="fas fa-rocket coupon-icon"></i> 10:30美团超级跳转</div>
                         <div class="coupon-actions">
-                            <button class="btn btn-direct" id="meituanSuperJumpBtn">点击跳转</button>
+                            <button class="btn btn-direct" id="meituanSuperJumpBtn">(入口一)浏览器跳转</button>
+                            <button class="btn btn-code" id="meituanAppScanBtn">(入口二)美团app扫码跳转</button>
                         </div>
+                        <div class="note">浏览器打开用两个入口都可以，微信内打开用入口二</div>
                     </div>
                     <div class="coupon-card dianping-card" id="dianpingSuperJump">
-                        <div class="coupon-title"><i class="fas fa-rocket coupon-icon"></i> (新增)10:30大众超级跳转</div>
+                        <div class="coupon-title"><i class="fas fa-rocket coupon-icon"></i> 10:30大众超级跳转</div>
                         <div class="coupon-actions">
-                            <button class="btn btn-direct btn-dianping" id="dianpingSuperJumpBtn">点击跳转</button>
+                            <button class="btn btn-direct btn-dianping" id="dianpingSuperJumpBtn">(入口一)浏览器跳转</button>
+                            <button class="btn btn-code" id="dianpingAppScanBtn">(入口二)大众app扫码跳转</button>
                         </div>
+                        <div class="note">浏览器打开用两个入口都可以，微信内打开用入口二</div>
                     </div>
+                    <!-- ============== END: MODIFIED BLOCK ============== -->
                 </div>
             </div>
-            <!-- ============== END: NEWLY ADDED BLOCK ============== -->
 
             <!-- 美团津贴 -->
             <div class="coupon-panel">
@@ -124,22 +129,22 @@
                     </div>
                 </div>
             </div>
-	<!-- 美团膨胀18-18 -->
-	<div class="coupon-panel">
-    	<div class="coupon-panel-header" data-target="meituan-expand-content">
-       	 	<div class="coupon-panel-title"><i class="panel-title-bar meituan-blue"></i><i class="fas fa-bomb"></i> 美团膨胀18-18</div>
-       	 	<span class="panel-icon">▼</span>
-    	</div>
-    	<div class="coupon-panel-content" id="meituan-expand-content">
-        	<div class="coupon-card" id="expand1">
-            	<div class="tag">重视</div>
-            	<div class="coupon-title"><i class="fas fa-fire coupon-icon"></i> 膨胀神券18-18</div>
-            	<div class="coupon-actions">
-                	<button class="btn btn-direct" id="peng1_direct">直接跳转</button>
-            	</div>
-			<div class="note">限苹果手机 中午12点整卡秒必中18-18</div>
-</div>
-                 <div class="coupon-card" id="tb2">
+            <!-- 美团膨胀18-18 -->
+            <div class="coupon-panel">
+                <div class="coupon-panel-header" data-target="meituan-expand-content">
+                    <div class="coupon-panel-title"><i class="panel-title-bar meituan-blue"></i><i class="fas fa-bomb"></i> 美团膨胀18-18</div>
+                    <span class="panel-icon">▼</span>
+                </div>
+                <div class="coupon-panel-content" id="meituan-expand-content">
+                    <div class="coupon-card" id="expand1">
+                        <div class="tag">重视</div>
+                        <div class="coupon-title"><i class="fas fa-fire coupon-icon"></i> 膨胀神券18-18</div>
+                        <div class="coupon-actions">
+                            <button class="btn btn-direct" id="peng1_direct">直接跳转</button>
+                        </div>
+                        <div class="note">限苹果手机 中午12点整卡秒必中18-18</div>
+                    </div>
+                    <div class="coupon-card" id="tb2">
                         <div class="coupon-title"><i class="fas fa-coffee coupon-icon"></i> 日常膨胀</div>
                         <div class="coupon-actions">
                             <button class="btn btn-direct" id="peng2_direct">美团会员膨</button>
@@ -148,8 +153,8 @@
                         </div>
                         <div class="note">每日膨胀奶茶小食，不限制设备</div>
                     </div>
-        	</div>
-	</div>
+                </div>
+            </div>
             <!-- 美食酒店 -->
             <div class="coupon-panel">
                 <div class="coupon-panel-header" data-target="meituan-group-content">
@@ -286,6 +291,18 @@
                 <img src="logo.png" alt="公众号二维码">
             </div>
             <p>扫描二维码关注公众号，获取最新优惠信息</p>
+        </div>
+    </div>
+    
+    <!-- Generic QR Code Modal for App Scans -->
+    <div id="scanQrModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeScanModalBtn">&times;</span>
+            <h2 id="scanModalTitle">请使用App扫码</h2>
+            <div class="qr-code">
+                <img src="" alt="App扫码" id="scanModalImage" style="max-width: 250px; height: auto;">
+            </div>
+            <p id="scanModalText">请使用对应的手机App扫描二维码</p>
         </div>
     </div>
 
