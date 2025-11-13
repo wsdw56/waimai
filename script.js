@@ -30,6 +30,7 @@ const Tool = {
     
     showToast: (content, duration = 2500) => {
         const toast = document.getElementById('globalToast');
+        if (!toast) return;
         toast.innerHTML = content;
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), duration);
@@ -37,6 +38,8 @@ const Tool = {
     
     setBtnLoading: (btnId, isLoading = true) => {
         const btn = document.getElementById(btnId);
+        if (!btn) return; // 安全检查：如果按钮不存在，则不执行任何操作
+
         if (isLoading) {
             btn.innerHTML = '<span class="loading"></span>处理中...';
             btn.disabled = true;
@@ -51,14 +54,15 @@ const Tool = {
                 tcBtn: '同程打车领券',
                 flowBtn: '流量卡办理',
                 flightBtn: '美团机票优惠券',
-                trainBtn: '美团火车票优惠券'
+                trainBtn: '美团火车票优惠券',
+                meituanSuperJumpBtn: '点击跳转',
+                dianpingSuperJumpBtn: '点击跳转'
             };
-            // ============== START: MODIFIED BLOCK ==============
+            
             if (btnId.includes("allowance") && btnId.includes("_wechat_direct")) {
                 btn.innerHTML = '<span></span>微信直接跳转';
             } else if (btnId.includes("allowance") && btnId.includes("_browser_copy")) {
                 btn.innerHTML = '<span></span>浏览器点击复制';
-            // ============== END: MODIFIED BLOCK ==============
             } else if (btnId.includes("_direct")) {
                 if (btnId.includes("dianping") || btnId.includes("jd") || btnId.includes("allowance")) {
                     btn.innerHTML = '<span></span>直接跳转领券';
@@ -68,6 +72,7 @@ const Tool = {
             } else if (btnId.includes("_showcode")) btn.innerHTML = '<span></span>口令';
             else if (btnId.includes("_copyopen")) btn.innerHTML = '<span></span>密令';
             else btn.innerHTML = `${btnTextMap[btnId] || "按钮"}`;
+            
             btn.disabled = false;
         }
     }
@@ -79,8 +84,6 @@ const Config = {
         coupon1: { directUrl: "https://click.meituan.com/t?t=1&c=2&p=eLhY-b9z3K4g", copyOpenText: "1%复制信息#%打开团App http://¥gJZGVkOTcwZDI¥一起领" },
         coupon2: { directUrl: "https://click.meituan.com/t?t=1&c=2&p=PhNn479zCEMo", copyOpenText: "1%复制信息#%打开团App http://¥iiNTdjOWQzMTc¥一起领" },
         dianping1: { directUrl: "https://market.waimai.meituan.com/gd2/wm/4i838U?wm_ctype=dp_iphone&p=eLhY-b9z3K4g&t=1&c=2" },
-        // ============== START: MODIFIED BLOCK (Removed allowance1 and allowance2) ==============
-        // ============== END: MODIFIED BLOCK ==============
         group1: { directUrl: "https://click.meituan.com/t?t=1&c=2&p=luGf6r9zMj5J" },
         group2: { directUrl: "https://click.meituan.com/t?t=1&c=2&p=AQ2q4L9zt-4m" },
         peng1: { directUrl: "https://i.meituan.com/foodnfc?t=1&c=2&p=eLhY-b9z3K4g&url=imeituan%3A%2F%2Fwww.meituan.com%2Ffoodnfc%3Fcode%3D02025313471959%26t%3D1%26c%3D2%26p%3DeLhY-b9z3K4g" },
@@ -111,7 +114,8 @@ const App = {
         App.initLinkParser();
         App.initCouponPanels();
         App.initCoupons();
-        App.initAllowanceCards(); // ============== ADDED THIS LINE ==============
+        App.initAllowanceCards();
+        App.initSuperJumps();
         App.initTaxi();
         App.initTickets();
         App.initOtherServices();
@@ -126,6 +130,8 @@ const App = {
         const homeBtn = document.getElementById("homeBtn");
         let extractedPoiId = "";
         
+        if (!pasteBox || !pasteBtn || !goBtn || !clearBtn || !homeBtn) return;
+
         pasteBox.addEventListener("input", (e) => {
             const text = e.target.value;
             const id = Tool.extractPoiId(text);
@@ -182,9 +188,12 @@ const App = {
         const panelHeaders = document.querySelectorAll(".coupon-panel-header");
         panelHeaders.forEach(clickedHeader => {
             clickedHeader.addEventListener("click", () => {
-                const clickedContent = document.getElementById(clickedHeader.getAttribute('data-target'));
-                const wasExpanded = clickedContent.classList.contains('expanded');
+                const targetId = clickedHeader.getAttribute('data-target');
+                if (!targetId) return;
+                const clickedContent = document.getElementById(targetId);
+                if (!clickedContent) return;
 
+                const wasExpanded = clickedContent.classList.contains('expanded');
                 document.querySelectorAll('.coupon-panel-content.expanded').forEach(content => {
                     content.classList.remove('expanded');
                     const correspondingHeader = document.querySelector(`[data-target="${content.id}"]`);
@@ -217,59 +226,36 @@ const App = {
                 });
             }
             
-            if (couponKey.startsWith("coupon")) {
-                const copyOpenBtn = document.getElementById(`${couponKey}_copyopen`);
-                const textEl = document.getElementById(`${couponKey}_text`);
-                if (copyOpenBtn && textEl) {
-                    copyOpenBtn.addEventListener("click", () => {
-                        Tool.setBtnLoading(`${couponKey}_copyopen`);
-                        Tool.copyToClipboard(config.copyOpenText)
-                            .then(() => Tool.showToast(`复制密令成功，请打开美团APP`))
-                            .catch(() => Tool.showToast('复制失败，请手动复制'))
-                            .finally(() => {
-                                setTimeout(() => {
-                                    Tool.setBtnLoading(`${couponKey}_copyopen`, false);
-                                    textEl.textContent = config.copyOpenText;
-                                }, 800);
-                            });
-                    });
-                }
+            const copyOpenBtn = document.getElementById(`${couponKey}_copyopen`);
+            const textEl = document.getElementById(`${couponKey}_text`);
+            const showCodeBtn = document.getElementById(`${couponKey}_showcode`);
+
+            if (copyOpenBtn && textEl) {
+                let appName = couponKey.startsWith("tb") ? "淘宝" : "美团";
+                copyOpenBtn.addEventListener("click", () => {
+                    Tool.setBtnLoading(`${couponKey}_copyopen`);
+                    Tool.copyToClipboard(config.copyOpenText)
+                        .then(() => Tool.showToast(`复制密令成功，请打开${appName}APP`))
+                        .catch(() => Tool.showToast('复制失败，请手动复制'))
+                        .finally(() => {
+                            setTimeout(() => {
+                                Tool.setBtnLoading(`${couponKey}_copyopen`, false);
+                                textEl.textContent = config.copyOpenText;
+                            }, 800);
+                        });
+                });
             }
-            
-            if (couponKey.startsWith("tb")) {
-                const showCodeBtn = document.getElementById(`${couponKey}_showcode`);
-                const copyOpenBtn = document.getElementById(`${couponKey}_copyopen`);
-                const textEl = document.getElementById(`${couponKey}_text`);
-                if (showCodeBtn && copyOpenBtn && textEl) {
-                    showCodeBtn.addEventListener("click", () => textEl.textContent = config.codeText);
-                    copyOpenBtn.addEventListener("click", () => {
-                        Tool.setBtnLoading(`${couponKey}_copyopen`);
-                        Tool.copyToClipboard(config.copyOpenText)
-                            .then(() => Tool.showToast(`复制密令成功，请打开淘宝APP`))
-                            .catch(() => Tool.showToast('复制失败，请手动复制'))
-                            .finally(() => {
-                                setTimeout(() => {
-                                    Tool.setBtnLoading(`${couponKey}_copyopen`, false);
-                                    textEl.textContent = config.copyOpenText;
-                                }, 800);
-                            });
-                    });
-                }
+
+            if (showCodeBtn && textEl && config.codeText) {
+                showCodeBtn.addEventListener("click", () => textEl.textContent = config.codeText);
             }
         });
     },
 
-    // ============== START: ADDED NEW FUNCTION ==============
     initAllowanceCards: () => {
         const allowanceConfig = {
-            allowance1: {
-                wechatUrl: "https://a.c1nb.cn/Ru8Uw",
-                browserCopyText: "#小程序://美团外卖丨外卖美食奶茶咖啡水果/9zETxgS7ZOwXu2q"
-            },
-            allowance2: {
-                wechatUrl: "https://a.c1nb.cn/Rt9GF",
-                browserCopyText: "#小程序://美团外卖丨外卖美食奶茶咖啡水果/BHBX7pIDglpeV5J"
-            }
+            allowance1: { wechatUrl: "https://a.c1nb.cn/Ru8Uw", browserCopyText: "#小程序://美团外卖丨外卖美食奶茶咖啡水果/9zETxgS7ZOwXu2q" },
+            allowance2: { wechatUrl: "https://a.c1nb.cn/Rt9GF", browserCopyText: "#小程序://美团外卖丨外卖美食奶茶咖啡水果/BHBX7pIDglpeV5J" }
         };
 
         Object.keys(allowanceConfig).forEach(key => {
@@ -297,39 +283,99 @@ const App = {
                         .then(() => Tool.showToast('已自动复制链接，请在微信中打开'))
                         .catch(() => Tool.showToast('复制失败，请手动复制'))
                         .finally(() => {
-                            setTimeout(() => {
-                                Tool.setBtnLoading(btnId, false);
-                            }, 800);
+                            setTimeout(() => Tool.setBtnLoading(btnId, false), 800);
                         });
                 });
             }
         });
     },
-    // ============== END: ADDED NEW FUNCTION ==============
+
+    initSuperJumps: () => {
+        const meituanBtn = document.getElementById("meituanSuperJumpBtn");
+        const dianpingBtn = document.getElementById("dianpingSuperJumpBtn");
+
+        const meituanUrl = "imeituan://www.meituan.com/takeout/browser?inner_url=https%3A%2F%2Fadfec.meituan.com%2Fallowance%2Ffree%3Ft%3D1%26c%3D2%26p%3DeLhY-b9z3K4g%26notitlebar%3D1%26future%3D2%26scene_id%3D179%26entry%3Dtiantianmiandan";
+        const dianpingUrl = "dianping://waimai.dianping.com/takeout/browser?inner_url=https%3A%2F%2Fadfec.meituan.com%2Fallowance%2Ffree%3Ft%3D1%26c%3D2%26p%3DeLhY-b9z3K4g%26notitlebar%3D1%26future%3D2%26scene_id%3D179%26entry%3Dtiantianmiandan";
+
+        if (meituanBtn) {
+            meituanBtn.addEventListener("click", () => {
+                const btnId = meituanBtn.id;
+                Tool.setBtnLoading(btnId);
+                Tool.showToast('<span class="loading"></span>正在为您超级跳转...');
+                window.location.href = meituanUrl;
+                setTimeout(() => Tool.setBtnLoading(btnId, false), 2000);
+            });
+        }
+
+        if (dianpingBtn) {
+            dianpingBtn.addEventListener("click", () => {
+                const btnId = dianpingBtn.id;
+                Tool.setBtnLoading(btnId);
+                Tool.showToast('<span class="loading"></span>正在为您超级跳转...');
+                window.location.href = dianpingUrl;
+                setTimeout(() => Tool.setBtnLoading(btnId, false), 2000);
+            });
+        }
+    },
     
     initTaxi: () => {
-        document.getElementById("didiBtn").addEventListener("click", () => { Tool.setBtnLoading("didiBtn"); Tool.showToast('<span class="loading"></span>正在跳转...'); setTimeout(() => { window.open(Config.taxiUrls.didi, "_blank"); Tool.setBtnLoading("didiBtn", false); }, 100); });
-        document.getElementById("t3Btn").addEventListener("click", () => { Tool.setBtnLoading("t3Btn"); Tool.showToast('<span class="loading"></span>正在跳转...'); setTimeout(() => { window.open(Config.taxiUrls.t3, "_blank"); Tool.setBtnLoading("t3Btn", false); }, 100); });
-        document.getElementById("hxzBtn").addEventListener("click", () => { Tool.setBtnLoading("hxzBtn"); Tool.showToast('<span class="loading"></span>正在跳转...'); setTimeout(() => { window.open(Config.taxiUrls.hxz, "_blank"); Tool.setBtnLoading("hxzBtn", false); }, 100); });
-        document.getElementById("tcBtn").addEventListener("click", () => { Tool.setBtnLoading("tcBtn"); Tool.showToast('<span class="loading"></span>正在跳转...'); setTimeout(() => { window.open(Config.taxiUrls.tc, "_blank"); Tool.setBtnLoading("tcBtn", false); }, 100); });
+        Object.keys(Config.taxiUrls).forEach(key => {
+            const btn = document.getElementById(`${key}Btn`);
+            if (btn) {
+                btn.addEventListener("click", () => {
+                    Tool.setBtnLoading(btn.id);
+                    Tool.showToast('<span class="loading"></span>正在跳转...');
+                    setTimeout(() => {
+                        window.open(Config.taxiUrls[key], "_blank");
+                        Tool.setBtnLoading(btn.id, false);
+                    }, 100);
+                });
+            }
+        });
     },
     
     initTickets: () => {
-        document.getElementById("flightBtn").addEventListener("click", () => { Tool.setBtnLoading("flightBtn"); Tool.showToast('<span class="loading"></span>正在跳转美团机票...'); setTimeout(() => { window.open(Config.ticketUrls.flight, "_blank"); Tool.setBtnLoading("flightBtn", false); }, 100); });
-        document.getElementById("trainBtn").addEventListener("click", () => { Tool.setBtnLoading("trainBtn"); Tool.showToast('<span class="loading"></span>正在跳转美团火车票...'); setTimeout(() => { window.open(Config.ticketUrls.train, "_blank"); Tool.setBtnLoading("trainBtn", false); }, 100); });
+        Object.keys(Config.ticketUrls).forEach(key => {
+            const btn = document.getElementById(`${key}Btn`);
+            if (btn) {
+                btn.addEventListener("click", () => {
+                    Tool.setBtnLoading(btn.id);
+                    Tool.showToast('<span class="loading"></span>正在跳转...');
+                    setTimeout(() => {
+                        window.open(Config.ticketUrls[key], "_blank");
+                        Tool.setBtnLoading(btn.id, false);
+                    }, 100);
+                });
+            }
+        });
     },
     
     initOtherServices: () => {
-        document.getElementById("flowBtn").addEventListener("click", () => { Tool.setBtnLoading("flowBtn"); Tool.showToast('<span class="loading"></span>正在跳转...'); setTimeout(() => { window.open(Config.flowUrl, "_blank"); Tool.setBtnLoading("flowBtn", false); }, 100); });
+        const flowBtn = document.getElementById("flowBtn");
+        if (flowBtn) {
+            flowBtn.addEventListener("click", () => {
+                Tool.setBtnLoading("flowBtn");
+                Tool.showToast('<span class="loading"></span>正在跳转...');
+                setTimeout(() => {
+                    window.open(Config.flowUrl, "_blank");
+                    Tool.setBtnLoading("flowBtn", false);
+                }, 100);
+            });
+        }
     },
     
     initQRCodeModal: () => {
         const qrCodeBtn = document.getElementById("qrCodeBtn");
         const modal = document.getElementById("qrModal");
-        const closeBtn = document.querySelector(".close");
-        qrCodeBtn.addEventListener("click", () => modal.style.display = "flex");
-        closeBtn.addEventListener("click", () => modal.style.display = "none");
-        window.addEventListener("click", (event) => { if (event.target === modal) modal.style.display = "none"; });
+        const closeBtn = modal ? modal.querySelector(".close") : null;
+        
+        if (qrCodeBtn && modal && closeBtn) {
+            qrCodeBtn.addEventListener("click", () => modal.style.display = "flex");
+            closeBtn.addEventListener("click", () => modal.style.display = "none");
+            window.addEventListener("click", (event) => {
+                if (event.target === modal) modal.style.display = "none";
+            });
+        }
     }
 };
 
