@@ -38,7 +38,7 @@ const Tool = {
     
     setBtnLoading: (btnId, isLoading = true) => {
         const btn = document.getElementById(btnId);
-        if (!btn) return; // 安全检查：如果按钮不存在，则不执行任何操作
+        if (!btn) return;
 
         if (isLoading) {
             btn.innerHTML = '<span class="loading"></span>处理中...';
@@ -55,8 +55,10 @@ const Tool = {
                 flowBtn: '流量卡办理',
                 flightBtn: '美团机票优惠券',
                 trainBtn: '美团火车票优惠券',
-                meituanSuperJumpBtn: '点击跳转',
-                dianpingSuperJumpBtn: '点击跳转'
+                meituanSuperJumpBtn: '浏览器直接跳转',
+                dianpingSuperJumpBtn: '浏览器直接跳转',
+                meituanAppScanBtn: '美团app扫码跳转',
+                dianpingAppScanBtn: '大众app扫码跳转'
             };
             
             if (btnId.includes("allowance") && btnId.includes("_wechat_direct")) {
@@ -108,9 +110,81 @@ const Config = {
     flowUrl: "https://hy.yunhaoka.com/#/pages/micro_store/index?agent_id=2ef179c2417751f42210db56129c38e0"
 };
 
-// 业务逻辑
+// ===================================================================
+// ============== START: NEW, INDEPENDENT SCANNER LOGIC ==============
+// ===================================================================
+const initScanButtons = () => {
+    console.log("Attempting to initialize scan buttons...");
+
+    const meituanScanBtn = document.getElementById("meituanAppScanBtn");
+    const dianpingScanBtn = document.getElementById("dianpingAppScanBtn");
+    const scanModal = document.getElementById("scanQrModal");
+
+    if (!scanModal) {
+        console.error("CRITICAL: Scan modal container (#scanQrModal) was NOT found. Scan feature cannot work.");
+        return;
+    }
+
+    const closeBtn = document.getElementById("closeScanModalBtn");
+    const imageEl = document.getElementById("scanModalImage");
+    const titleEl = document.getElementById("scanModalTitle");
+    const textEl = document.getElementById("scanModalText");
+
+    if (!closeBtn || !imageEl || !titleEl || !textEl) {
+        console.error("CRITICAL: One or more elements inside the scan modal are missing. Scan feature cannot work.");
+        return;
+    }
+
+    const openModal = (imageSrc, titleText, bodyText) => {
+        imageEl.src = imageSrc;
+        titleEl.innerText = titleText;
+        textEl.innerText = bodyText;
+        scanModal.style.display = "flex";
+        console.log(`SUCCESS: Showing modal with image: ${imageSrc}`);
+    };
+
+    const closeModal = () => {
+        scanModal.style.display = "none";
+    };
+
+    if (meituanScanBtn) {
+        console.log("Found Meituan scan button. Attaching click event.");
+        meituanScanBtn.addEventListener("click", () => {
+            console.log("Meituan scan button CLICKED!");
+            openModal("MT.png", "美团App扫码跳转", "请打开美团App，使用“扫一扫”功能");
+        });
+    } else {
+        console.warn("WARNING: Meituan scan button (#meituanAppScanBtn) was not found.");
+    }
+
+    if (dianpingScanBtn) {
+        console.log("Found Dianping scan button. Attaching click event.");
+        dianpingScanBtn.addEventListener("click", () => {
+            console.log("Dianping scan button CLICKED!");
+            openModal("DP.png", "大众点评App扫码跳转", "请打开大众点评App，使用“扫一扫”功能");
+        });
+    } else {
+        console.warn("WARNING: Dianping scan button (#dianpingAppScanBtn) was not found.");
+    }
+
+    closeBtn.addEventListener("click", closeModal);
+    window.addEventListener("click", (event) => {
+        if (event.target === scanModal) {
+            closeModal();
+        }
+    });
+};
+// =================================================================
+// ============== END: NEW, INDEPENDENT SCANNER LOGIC ==============
+// =================================================================
+
+
+// 业务逻辑 (保持不变)
 const App = {
     init: () => {
+        // We call our new independent function here
+        initScanButtons();
+
         App.initLinkParser();
         App.initCouponPanels();
         App.initCoupons();
@@ -293,7 +367,6 @@ const App = {
     initSuperJumps: () => {
         const meituanBtn = document.getElementById("meituanSuperJumpBtn");
         const dianpingBtn = document.getElementById("dianpingSuperJumpBtn");
-
         const meituanUrl = "imeituan://www.meituan.com/takeout/browser?inner_url=https%3A%2F%2Fadfec.meituan.com%2Fallowance%2Ffree%3Ft%3D1%26c%3D2%26p%3DeLhY-b9z3K4g%26notitlebar%3D1%26future%3D2%26scene_id%3D179%26entry%3Dtiantianmiandan";
         const dianpingUrl = "dianping://waimai.dianping.com/takeout/browser?inner_url=https%3A%2F%2Fadfec.meituan.com%2Fallowance%2Ffree%3Ft%3D1%26c%3D2%26p%3DeLhY-b9z3K4g%26notitlebar%3D1%26future%3D2%26scene_id%3D179%26entry%3Dtiantianmiandan";
 
@@ -306,7 +379,6 @@ const App = {
                 setTimeout(() => Tool.setBtnLoading(btnId, false), 2000);
             });
         }
-
         if (dianpingBtn) {
             dianpingBtn.addEventListener("click", () => {
                 const btnId = dianpingBtn.id;
