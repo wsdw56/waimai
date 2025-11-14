@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lemon美団外卖兔单查询</title>
+    <style>
+        :root {
+            --primary-color: #FFC107; /* 美团黄 */
+            --primary-color-dark: #e0a800;
+            --secondary-color: #17a2b8; /* 醒目的蓝绿色 */
+            --secondary-color-dark: #117a8b;
+            --background-color: #f7f8fa;
+            --container-bg: #ffffff;
+            --text-color: #2c3e50;
+            --text-secondary: #6c757d;
+            --border-color: #e9ecef;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 35px 40px;
+            background-color: var(--container-bg);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .header {
+            display: flex; align-items: center; justify-content: center;
+            gap: 12px; margin-bottom: 10px;
+        }
+        .header h2 { font-size: 28px; font-weight: 700; }
+        .header .icon { width: 32px; height: 32px; color: var(--primary-color); }
+
+        .container > p {
+            text-align: center; color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* --- 醒目的新按钮样式 --- */
+        .promo-btn {
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+            width: 100%; padding: 12px 15px; margin-bottom: 30px;
+            background-image: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-color-dark) 100%);
+            color: #ffffff;
+            font-size: 16px; border: none; border-radius: 8px;
+            cursor: pointer; font-weight: 700;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+            border-bottom: 2px solid var(--secondary-color-dark);
+        }
+        .promo-btn svg { width: 20px; height: 20px; }
+        .promo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
+        }
+        .promo-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(23, 162, 184, 0.3);
+            border-bottom-width: 0;
+        }
+
+        .form-group { margin-bottom: 20px; }
+        label {
+            display: block; margin-bottom: 8px; font-weight: 600;
+            font-size: 14px; color: var(--text-secondary);
+        }
+        textarea {
+            width: 100%; padding: 12px 15px; border: 1px solid var(--border-color);
+            border-radius: 8px; resize: vertical; font-family: inherit;
+            font-size: 16px; min-height: 100px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        textarea:focus {
+            outline: none; border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.25);
+        }
+        
+        .primary-btn {
+            width: 100%; padding: 14px 15px;
+            background-image: linear-gradient(135deg, #ffd100 0%, #ffc107 100%);
+            color: var(--text-color); font-size: 18px; border: none;
+            border-radius: 8px; cursor: pointer; font-weight: 700;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+            border-bottom: 2px solid var(--primary-color-dark);
+        }
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+        }
+        .primary-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(255, 193, 7, 0.3);
+            border-bottom-width: 0;
+        }
+
+        .results-header {
+            margin-top: 40px; padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px; font-size: 20px; font-weight: 600;
+        }
+        #response { border: none; background-color: transparent; padding: 0; min-height: 100px; }
+        .result-card {
+            background-color: var(--container-bg); border: 1px solid var(--border-color);
+            border-left: 5px solid #bdc3c7; border-radius: 8px;
+            padding: 15px 20px; margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative; overflow: hidden;
+            transition: all 0.2s ease-in-out;
+        }
+        .result-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+        .result-card.latest { border-left-color: var(--primary-color); background-color: #fffaf0; }
+        .result-card.latest::before {
+            content: '最新'; position: absolute; top: 10px; right: -25px;
+            background-color: var(--primary-color); color: var(--text-color);
+            font-size: 12px; font-weight: bold; padding: 4px 25px;
+            transform: rotate(45deg); box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .result-item {
+            margin-bottom: 10px; font-size: 15px; color: var(--text-color);
+            display: flex; align-items: center;
+        }
+        .result-item:last-child { margin-bottom: 0; }
+        .result-item .label { font-weight: 600; color: var(--text-secondary); flex-shrink: 0; width: 110px; }
+        .no-result {
+            text-align: center; color: var(--text-secondary); padding: 40px 20px;
+            background-color: #fafafa; border: 2px dashed var(--border-color);
+            border-radius: 8px; font-size: 16px;
+        }
+        
+        footer { text-align: center; margin-top: 30px; color: #b2bec3; font-size: 14px; }
+        
+        .modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+            width: 100%; height: 100%; overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+            justify-content: center; align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-content {
+            background-color: #fff; padding: 30px; border-radius: 12px;
+            text-align: center; position: relative; width: 90%;
+            max-width: 350px; box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-content img { max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px; }
+        .modal-content p { font-size: 16px; color: var(--text-secondary); font-weight: 500; }
+        .close-btn {
+            color: #aaa; position: absolute; top: 10px; right: 15px;
+            font-size: 28px; font-weight: bold; cursor: pointer;
+        }
+        .close-btn:hover, .close-btn:focus { color: #000; text-decoration: none; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M21.218 15.71a1.001 1.001 0 0 0-1.07-1.07l-2.43 1.215-2.06-3.568-3.21-1.854 1.252-2.168a1 1 0 0 0-.5-1.866l-4-1A1 1 0 0 0 8 8.163v4.612l-4.79-2.766a1.002 1.002 0 0 0-1.378.373 1 1 0 0 0 .377 1.378l4.43 2.557-2.126 3.682a1.002 1.002 0 0 0 .208 1.403 1 1 0 0 0 1.402-.208l1.92-3.325L12 18.001v2a1 1 0 0 0 1.866.5l4-7a1.002 1.002 0 0 0-.648-1.791zm-9.352-5.768L14.4 11.52l-2.534 1.463v-3.05l-1-1.732zM12 16.08l-2.28-1.316.96-1.662L13 14.505l-1 1.575z"></path></svg>
+        <h2>Lemon美団外卖兔单查询</h2>
+    </div>
+    
+    <p>仅需粘贴 Token, 即刻查询您的免单记录。</p>
+    
+    <!-- 醒目的新按钮 -->
+    <button class="promo-btn" onclick="toggleQRCodeModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M0 2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H5ZM8 0a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2ZM13 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1h-1ZM3 5a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H3Zm0 5a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H3Zm0-4a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H3Zm-2 4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H8Zm3-3a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v1Zm1 4a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-1Zm2-1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v1ZM8 12a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v1Zm-5 1a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v2Zm2-1a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-1Zm5-1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H8Zm3 0a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-2Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-1Z"/></svg>
+        <span>扫码关注一手线报</span>
+    </button>
+
+    <div class="form-group">
+        <label for="token">用户TOKEN</label>
+        <textarea id="token" rows="4" placeholder="在此处粘贴您获取的Token值"></textarea>
+    </div>
+
+    <button class="primary-btn" onclick="sendRequest()">立即查询</button>
+
+    <h3 class="results-header">查询结果</h3>
+    <div id="response">
+        <p class="no-result">等待查询中...</p>
+    </div>
+    
+    <footer>Crafted for simplicity and convenience.</footer>
+</div>
+
+<div id="qrModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="toggleQRCodeModal()">&times;</span>
+        <img src="logo.png" alt="扫码关注二维码">
+        <p>微信扫码，获取一手线报</p>
+    </div>
+</div>
+
+<script>
+    const qrModal = document.getElementById('qrModal');
+    function toggleQRCodeModal() {
+        qrModal.style.display = (qrModal.style.display === 'flex') ? 'none' : 'flex';
+    }
+    window.onclick = function(event) {
+        if (event.target == qrModal) { qrModal.style.display = "none"; }
+    }
+
+    async function sendRequest() {
+        const userToken = document.getElementById('token').value.trim();
+        if (!userToken) { alert('请填写您的Token！'); return; }
+        const longitude = '117879508'; const latitude = '30953749';
+        const url = 'https://adapi.waimai.meituan.com/api/ad/landingPage';
+        const params = new URLSearchParams();
+        ['wm_logintoken', 'token', 'userToken'].forEach(k => params.append(k, userToken));
+        Object.entries({
+            wm_longitude: longitude, wm_latitude: latitude, wm_actual_longitude: longitude, wm_actual_latitude: latitude,
+            wm_uuid: '1343752107886690334', wm_ctype: 'mt_mp', wm_appversion: '5.85.04',
+            wm_visitid: 'd72e4668-5bcd-4b56-a0ba-8153ba3cbbb7', t: '1', c: '2', p: 'eLhY-b9z3K4g',
+            notitlebar: '1', future: '2', scene_id: '179', entry: 'tiantianmiandan', mt_app_version: '9.46.111',
+            req_time: Date.now(), page_num: '0', page_size: '10', sortType: '0', ad_page_type: '0',
+            wm_dtype: 'microsoft', wm_dplatform: 'windows', ctype: 'mt_mp'
+        }).forEach(([key, value]) => params.append(key, value));
+
+        const responseContainer = document.getElementById('response');
+        responseContainer.innerHTML = '<p class="no-result">正在查询中，请稍候...</p>';
+
+        try {
+            const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' }, body: params });
+            if (!response.ok) throw new Error(`网络请求失败，状态码: ${response.status}`);
+            const data = await response.json();
+            responseContainer.innerHTML = '';
+            let awardList = null;
+            if (data?.data?.module_activity_list?.string_data) {
+                try {
+                    const innerData = JSON.parse(data.data.module_activity_list.string_data);
+                    awardList = innerData.freeOrderRecord;
+                } catch (e) { console.error("解析string_data失败:", e); awardList = null; }
+            }
+
+            if (awardList && awardList.length > 0) {
+                awardList.forEach((item, index) => {
+                    const price = (item.awardPrice / 100).toFixed(2);
+                    const ctime = new Date(item.ctime).toLocaleString('zh-CN', {
+                        timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',
+                        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+                    }).replace(/\//g, '-');
+                    let statusText = '';
+                    switch (item.status) {
+                        case 0: statusText = '没免单'; break;
+                        case 1: statusText = '免单未打款'; break;
+                        case 2: statusText = '免单已打款'; break;
+                        default: statusText = `未知状态 (${item.status})`;
+                    }
+                    const card = document.createElement('div');
+                    card.className = 'result-card';
+                    if (index === 0) { card.classList.add('latest'); }
+                    card.innerHTML = `
+                        <div class="result-item"><span class="label">免单金额:</span><span class="value">${price} 元</span></div>
+                        <div class="result-item"><span class="label">商家接单时间:</span><span class="value">${ctime}</span></div>
+                        <div class="result-item"><span class="label">免单状态:</span><span class="value">${statusText}</span></div>
+                    `;
+                    responseContainer.appendChild(card);
+                });
+            } else {
+                responseContainer.innerHTML = '<p class="no-result">查询完成，您没有任何免单记录。</p>';
+            }
+        } catch (error) {
+            console.error('请求失败:', error);
+            responseContainer.innerHTML = `<p class="no-result" style="color: #d9534f; border-color: #d9534f;">查询失败！<br><small style="font-weight: normal; color: #6c757d; margin-top: 8px; display: block;">${error.message}<br>这可能是由于跨域(CORS)策略导致，请按F12在控制台查看详情。</small></p>`;
+        }
+    }
+</script>
+
+</body>
+</html>
