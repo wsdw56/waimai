@@ -176,9 +176,8 @@
         <h2>Lemon美団外卖兔单查询</h2>
     </div>
     
-    <p>仅需粘贴 Token, 即刻查询您的兔单记录。</p>
+    <p>仅需粘贴 Token, 即刻查询您的免单记录。</p>
     
-    <!-- 醒目的新按钮 -->
     <button class="promo-btn" onclick="toggleQRCodeModal()">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M0 2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H5ZM8 0a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2ZM13 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1h-1ZM3 5a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H3Zm0 5a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H3Zm0-4a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H3Zm-2 4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H8Zm3-3a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v1Zm1 4a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-1Zm2-1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v1ZM8 12a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v1Zm-5 1a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v2Zm2-1a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-1Zm5-1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H8Zm3 0a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-2Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-1Z"/></svg>
         <span>扫码关注一手线报</span>
@@ -186,7 +185,7 @@
 
     <div class="form-group">
         <label for="token">用户TOKEN</label>
-        <textarea id="token" rows="4" placeholder="在此处粘贴您获取的Token值"></textarea>
+        <textarea id="token" rows="4" placeholder="在此处粘贴您获取的Token值或包含Token的文本"></textarea>
     </div>
 
     <button class="primary-btn" onclick="sendRequest()">立即查询</button>
@@ -207,81 +206,8 @@
     </div>
 </div>
 
-<script>
-    const qrModal = document.getElementById('qrModal');
-    function toggleQRCodeModal() {
-        qrModal.style.display = (qrModal.style.display === 'flex') ? 'none' : 'flex';
-    }
-    window.onclick = function(event) {
-        if (event.target == qrModal) { qrModal.style.display = "none"; }
-    }
-
-    async function sendRequest() {
-        const userToken = document.getElementById('token').value.trim();
-        if (!userToken) { alert('请填写您的Token！'); return; }
-        const longitude = '117879508'; const latitude = '30953749';
-        const url = 'https://adapi.waimai.meituan.com/api/ad/landingPage';
-        const params = new URLSearchParams();
-        ['wm_logintoken', 'token', 'userToken'].forEach(k => params.append(k, userToken));
-        Object.entries({
-            wm_longitude: longitude, wm_latitude: latitude, wm_actual_longitude: longitude, wm_actual_latitude: latitude,
-            wm_uuid: '1343752107886690334', wm_ctype: 'mt_mp', wm_appversion: '5.85.04',
-            wm_visitid: 'd72e4668-5bcd-4b56-a0ba-8153ba3cbbb7', t: '1', c: '2', p: 'eLhY-b9z3K4g',
-            notitlebar: '1', future: '2', scene_id: '179', entry: 'tiantianmiandan', mt_app_version: '9.46.111',
-            req_time: Date.now(), page_num: '0', page_size: '10', sortType: '0', ad_page_type: '0',
-            wm_dtype: 'microsoft', wm_dplatform: 'windows', ctype: 'mt_mp'
-        }).forEach(([key, value]) => params.append(key, value));
-
-        const responseContainer = document.getElementById('response');
-        responseContainer.innerHTML = '<p class="no-result">正在查询中，请稍候...</p>';
-
-        try {
-            const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' }, body: params });
-            if (!response.ok) throw new Error(`网络请求失败，状态码: ${response.status}`);
-            const data = await response.json();
-            responseContainer.innerHTML = '';
-            let awardList = null;
-            if (data?.data?.module_activity_list?.string_data) {
-                try {
-                    const innerData = JSON.parse(data.data.module_activity_list.string_data);
-                    awardList = innerData.freeOrderRecord;
-                } catch (e) { console.error("解析string_data失败:", e); awardList = null; }
-            }
-
-            if (awardList && awardList.length > 0) {
-                awardList.forEach((item, index) => {
-                    const price = (item.awardPrice / 100).toFixed(2);
-                    const ctime = new Date(item.ctime).toLocaleString('zh-CN', {
-                        timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',
-                        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
-                    }).replace(/\//g, '-');
-                    let statusText = '';
-                    switch (item.status) {
-                        case 0: statusText = '没兔单'; break;
-                        case 1: statusText = '兔单未打款'; break;
-                        case 2: statusText = '兔单已打款'; break;
-                        default: statusText = `未知状态 (${item.status})`;
-                    }
-                    const card = document.createElement('div');
-                    card.className = 'result-card';
-                    if (index === 0) { card.classList.add('latest'); }
-                    card.innerHTML = `
-                        <div class="result-item"><span class="label">兔单金额:</span><span class="value">${price} 元</span></div>
-                        <div class="result-item"><span class="label">商家接单时间:</span><span class="value">${ctime}</span></div>
-                        <div class="result-item"><span class="label">兔单状态:</span><span class="value">${statusText}</span></div>
-                    `;
-                    responseContainer.appendChild(card);
-                });
-            } else {
-                responseContainer.innerHTML = '<p class="no-result">查询完成，您没有任何兔单记录。</p>';
-            }
-        } catch (error) {
-            console.error('请求失败:', error);
-            responseContainer.innerHTML = `<p class="no-result" style="color: #d9534f; border-color: #d9534f;">查询失败！<br><small style="font-weight: normal; color: #6c757d; margin-top: 8px; display: block;">${error.message}<br>这可能是由于跨域(CORS)策略导致，请按F12在控制台查看详情。</small></p>`;
-        }
-    }
-</script>
+<!-- 引用外部 JavaScript 文件 -->
+<script src="free.js"></script>
 
 </body>
-
 </html>
