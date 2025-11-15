@@ -61,13 +61,31 @@ async function sendRequest() {
         }
 
         if (awardList && awardList.length > 0) {
-            // 如果有免单记录，则按原方式显示
             awardList.forEach((item, index) => {
                 const price = (item.awardPrice / 100).toFixed(2);
-                const ctime = new Date(item.ctime).toLocaleString('zh-CN', {
-                    timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',
-                    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+                
+                // --- 时间格式化修改部分 ---
+                const date = new Date(item.ctime);
+                
+                // 1. 使用 toLocaleString 获取在上海时区的 年-月-日 时:分:秒
+                const dateTimeString = date.toLocaleString('zh-CN', {
+                    timeZone: 'Asia/Shanghai',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
                 }).replace(/\//g, '-');
+
+                // 2. 单独获取毫秒数，并用 padStart 补足3位（例如 5 -> 005）
+                const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
+                
+                // 3. 将两者拼接起来
+                const ctime = `${dateTimeString}.${milliseconds}`;
+                // --- 修改结束 ---
+
                 let statusText = '';
                 switch (item.status) {
                     case 0: statusText = '没免单'; break;
@@ -75,6 +93,7 @@ async function sendRequest() {
                     case 2: statusText = '免单已打款'; break;
                     default: statusText = `未知状态 (${item.status})`;
                 }
+
                 const card = document.createElement('div');
                 card.className = 'result-card';
                 if (index === 0) { card.classList.add('latest'); }
