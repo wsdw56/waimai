@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lemon美団外卖兔单查询</title>
+    <title>Lemon美団外卖兔单查询 - 登录</title>
     <style>
         :root {
-            --primary-color: #FFC107; /* 美团黄 */
+            --primary-color: #FFC107;
             --primary-color-dark: #e0a800;
-            --secondary-color: #17a2b8; /* 醒目的蓝绿色 */
+            --secondary-color: #17a2b8;
             --secondary-color-dark: #117a8b;
             --background-color: #f7f8fa;
             --container-bg: #ffffff;
             --text-color: #2c3e50;
             --text-secondary: #6c757d;
             --border-color: #e9ecef;
+            --error-color: #d9534f;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,10 +25,15 @@
             background-color: var(--background-color);
             color: var(--text-color);
             padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
 
         .container {
             max-width: 600px;
+            width: 100%;
             margin: 40px auto;
             padding: 35px 40px;
             background-color: var(--container-bg);
@@ -37,146 +43,97 @@
             transition: all 0.3s ease;
         }
         
-        .header {
-            display: flex; align-items: center; justify-content: center;
-            gap: 12px; margin-bottom: 10px;
+        /* --- 登录界面样式 --- */
+        #login-container {
+            max-width: 400px;
         }
-        .header h2 { font-size: 28px; font-weight: 700; }
-        .header .icon { width: 32px; height: 32px; color: var(--primary-color); }
-
-        .container > p {
-            text-align: center; color: var(--text-secondary);
-            margin-bottom: 20px;
+        #login-container h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 28px;
         }
-
-        /* --- 醒目的新按钮样式 --- */
-        .promo-btn {
-            display: flex; justify-content: center; align-items: center; gap: 10px;
-            width: 100%; padding: 12px 15px; margin-bottom: 30px;
-            background-image: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-color-dark) 100%);
-            color: #ffffff;
-            font-size: 16px; border: none; border-radius: 8px;
-            cursor: pointer; font-weight: 700;
-            transition: all 0.2s ease-in-out;
-            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
-            border-bottom: 2px solid var(--secondary-color-dark);
-        }
-        .promo-btn svg { width: 20px; height: 20px; }
-        .promo-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
-        }
-        .promo-btn:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 10px rgba(23, 162, 184, 0.3);
-            border-bottom-width: 0;
-        }
-
         .form-group { margin-bottom: 20px; }
         label {
             display: block; margin-bottom: 8px; font-weight: 600;
             font-size: 14px; color: var(--text-secondary);
         }
-        textarea {
+        input[type="text"], input[type="password"] {
             width: 100%; padding: 12px 15px; border: 1px solid var(--border-color);
-            border-radius: 8px; resize: vertical; font-family: inherit;
-            font-size: 16px; min-height: 100px;
+            border-radius: 8px; font-size: 16px;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
-        textarea:focus {
+        input[type="text"]:focus, input[type="password"]:focus {
             outline: none; border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.25);
         }
-        
-        .primary-btn {
-            width: 100%; padding: 14px 15px;
-            background-image: linear-gradient(135deg, #ffd100 0%, #ffc107 100%);
-            color: var(--text-color); font-size: 18px; border: none;
-            border-radius: 8px; cursor: pointer; font-weight: 700;
-            transition: all 0.2s ease-in-out;
-            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
-            border-bottom: 2px solid var(--primary-color-dark);
-        }
-        .primary-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
-        }
-        .primary-btn:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 10px rgba(255, 193, 7, 0.3);
-            border-bottom-width: 0;
+        #login-error {
+            color: var(--error-color);
+            text-align: center;
+            margin-top: 15px;
+            min-height: 20px;
+            font-size: 14px;
         }
 
-        .results-header {
-            margin-top: 40px; padding-bottom: 10px;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 20px; font-size: 20px; font-weight: 600;
-        }
+        /* --- 主应用样式 (大部分从之前继承) --- */
+        .header { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 10px; }
+        .header h2 { font-size: 28px; font-weight: 700; }
+        .header .icon { width: 32px; height: 32px; color: var(--primary-color); }
+        .container > p { text-align: center; color: var(--text-secondary); margin-bottom: 20px; }
+        .promo-btn { display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; padding: 12px 15px; margin-bottom: 30px; background-image: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-color-dark) 100%); color: #ffffff; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; transition: all 0.2s ease-in-out; box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3); border-bottom: 2px solid var(--secondary-color-dark); }
+        .promo-btn svg { width: 20px; height: 20px; }
+        .promo-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4); }
+        .promo-btn:active { transform: translateY(0); box-shadow: 0 2px 10px rgba(23, 162, 184, 0.3); border-bottom-width: 0; }
+        textarea { width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px; resize: vertical; font-family: inherit; font-size: 16px; min-height: 100px; transition: border-color 0.2s, box-shadow 0.2s; }
+        textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.25); }
+        .primary-btn { width: 100%; padding: 14px 15px; background-image: linear-gradient(135deg, #ffd100 0%, #ffc107 100%); color: var(--text-color); font-size: 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; transition: all 0.2s ease-in-out; box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3); border-bottom: 2px solid var(--primary-color-dark); }
+        .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4); }
+        .primary-btn:active { transform: translateY(0); box-shadow: 0 2px 10px rgba(255, 193, 7, 0.3); border-bottom-width: 0; }
+        .results-header { margin-top: 40px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; font-size: 20px; font-weight: 600; }
         #response { border: none; background-color: transparent; padding: 0; min-height: 100px; }
-        .result-card {
-            background-color: var(--container-bg); border: 1px solid var(--border-color);
-            border-left: 5px solid #bdc3c7; border-radius: 8px;
-            padding: 15px 20px; margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            position: relative; overflow: hidden;
-            transition: all 0.2s ease-in-out;
-        }
+        .result-card { background-color: var(--container-bg); border: 1px solid var(--border-color); border-left: 5px solid #bdc3c7; border-radius: 8px; padding: 15px 20px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; overflow: hidden; transition: all 0.2s ease-in-out; }
         .result-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
         .result-card.latest { border-left-color: var(--primary-color); background-color: #fffaf0; }
-        .result-card.latest::before {
-            content: '最新'; position: absolute; top: 10px; right: -25px;
-            background-color: var(--primary-color); color: var(--text-color);
-            font-size: 12px; font-weight: bold; padding: 4px 25px;
-            transform: rotate(45deg); box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-        }
-        .result-item {
-            margin-bottom: 10px; font-size: 15px; color: var(--text-color);
-            display: flex; align-items: center;
-        }
+        .result-card.latest::before { content: '最新'; position: absolute; top: 10px; right: -25px; background-color: var(--primary-color); color: var(--text-color); font-size: 12px; font-weight: bold; padding: 4px 25px; transform: rotate(45deg); box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .result-item { margin-bottom: 10px; font-size: 15px; color: var(--text-color); display: flex; align-items: center; }
         .result-item:last-child { margin-bottom: 0; }
         .result-item .label { font-weight: 600; color: var(--text-secondary); flex-shrink: 0; width: 110px; }
-        .no-result {
-            text-align: center; color: var(--text-secondary); padding: 40px 20px;
-            background-color: #fafafa; border: 2px dashed var(--border-color);
-            border-radius: 8px; font-size: 16px;
-        }
-        
+        .no-result { text-align: center; color: var(--text-secondary); padding: 40px 20px; background-color: #fafafa; border: 2px dashed var(--border-color); border-radius: 8px; font-size: 16px; }
         footer { text-align: center; margin-top: 30px; color: #b2bec3; font-size: 14px; }
-        
-        .modal {
-            display: none; position: fixed; z-index: 1000; left: 0; top: 0;
-            width: 100%; height: 100%; overflow: auto;
-            background-color: rgba(0, 0, 0, 0.6);
-            justify-content: center; align-items: center;
-            animation: fadeIn 0.3s ease;
-        }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.6); justify-content: center; align-items: center; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .modal-content {
-            background-color: #fff; padding: 30px; border-radius: 12px;
-            text-align: center; position: relative; width: 90%;
-            max-width: 350px; box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-            animation: slideIn 0.3s ease-out;
-        }
+        .modal-content { background-color: #fff; padding: 30px; border-radius: 12px; text-align: center; position: relative; width: 90%; max-width: 350px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); animation: slideIn 0.3s ease-out; }
         @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .modal-content img { max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px; }
         .modal-content p { font-size: 16px; color: var(--text-secondary); font-weight: 500; }
-        .close-btn {
-            color: #aaa; position: absolute; top: 10px; right: 15px;
-            font-size: 28px; font-weight: bold; cursor: pointer;
-        }
+        .close-btn { color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; }
         .close-btn:hover, .close-btn:focus { color: #000; text-decoration: none; }
-
     </style>
 </head>
 <body>
 
-<div class="container">
+<!-- 登录界面 -->
+<div id="login-container" class="container">
+    <h2>用户登录</h2>
+    <div class="form-group">
+        <label for="username">账号</label>
+        <input type="text" id="username" placeholder="请输入您的账号">
+    </div>
+    <div class="form-group">
+        <label for="password">密码</label>
+        <input type="password" id="password" placeholder="请输入您的密码">
+    </div>
+    <button class="primary-btn" onclick="handleLogin()">登录</button>
+    <p id="login-error"></p>
+</div>
+
+<!-- 主查询界面 (默认隐藏) -->
+<div id="main-container" class="container" style="display: none;">
     <div class="header">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M21.218 15.71a1.001 1.001 0 0 0-1.07-1.07l-2.43 1.215-2.06-3.568-3.21-1.854 1.252-2.168a1 1 0 0 0-.5-1.866l-4-1A1 1 0 0 0 8 8.163v4.612l-4.79-2.766a1.002 1.002 0 0 0-1.378.373 1 1 0 0 0 .377 1.378l4.43 2.557-2.126 3.682a1.002 1.002 0 0 0 .208 1.403 1 1 0 0 0 1.402-.208l1.92-3.325L12 18.001v2a1 1 0 0 0 1.866.5l4-7a1.002 1.002 0 0 0-.648-1.791zm-9.352-5.768L14.4 11.52l-2.534 1.463v-3.05l-1-1.732zM12 16.08l-2.28-1.316.96-1.662L13 14.505l-1 1.575z"></path></svg>
         <h2>Lemon美団外卖兔单查询</h2>
     </div>
     
-    <p>仅需粘贴 Token, 即刻查询您的兔单记录。</p>
+    <p>仅需粘贴 Token, 即刻查询您的免单记录。</p>
     
     <button class="promo-btn" onclick="toggleQRCodeModal()">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M0 2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H5ZM8 0a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2ZM13 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1h-1ZM3 5a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H3Zm0 5a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H3Zm0-4a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H3Zm-2 4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H8Zm3-3a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v1Zm1 4a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-1Zm2-1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v1ZM8 12a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v1Zm-5 1a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v2Zm2-1a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-1Zm5-1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H8Zm3 0a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-2Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-1Z"/></svg>
@@ -211,4 +168,3 @@
 
 </body>
 </html>
-
