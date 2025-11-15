@@ -1,3 +1,50 @@
+// --- 登录逻辑 ---
+
+const loginContainer = document.getElementById('login-container');
+const mainContainer = document.getElementById('main-container');
+const loginError = document.getElementById('login-error');
+
+// --- 关键修改：将账号密码直接定义在这里 ---
+// 格式：{ user: "用户名", pass: "密码" }
+// 您可以在这里添加任意多个账号
+const accounts = [
+    { user: "123", pass: "321" },
+    { user: "111", pass: "222" }
+];
+// ------------------------------------------
+
+function handleLogin() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    loginError.textContent = ''; // 先清空之前的错误提示
+
+    if (!username || !password) {
+        loginError.textContent = '账号和密码不能为空！';
+        return;
+    }
+
+    // 从我们定义好的 accounts 列表中查找用户
+    const foundUser = accounts.find(acc => acc.user === username);
+
+    if (foundUser) {
+        // 找到了账号，再检查密码
+        if (foundUser.pass === password) {
+            // 密码正确，登录成功
+            loginContainer.style.display = 'none';
+            mainContainer.style.display = 'block';
+        } else {
+            // 密码错误
+            loginError.textContent = '密码错误！';
+        }
+    } else {
+        // 账号不存在
+        loginError.textContent = '账号不存在！';
+    }
+}
+
+
+// --- 原有的查询逻辑 (无需改动) ---
+
 const qrModal = document.getElementById('qrModal');
 function toggleQRCodeModal() {
     qrModal.style.display = (qrModal.style.display === 'flex') ? 'none' : 'flex';
@@ -10,12 +57,11 @@ async function sendRequest() {
     const rawInput = document.getElementById('token').value.trim();
     let userToken = '';
 
-    // 智能提取Token
     const tokenMatch = rawInput.match(/token=([^;]+)/);
     if (tokenMatch && tokenMatch[1]) {
         userToken = tokenMatch[1];
     } else {
-        userToken = rawInput; // 如果没有匹配到 "token=..."，则使用全部输入
+        userToken = rawInput;
     }
 
     if (!userToken) {
@@ -44,12 +90,11 @@ async function sendRequest() {
         if (!response.ok) throw new Error(`网络请求失败，状态码: ${response.status}`);
         
         const data = await response.json();
-        responseContainer.innerHTML = ''; // 清空之前的内容
+        responseContainer.innerHTML = '';
 
-        // 判断登录失败的响应
         if (data.error && data.error.message === "登录失败") {
             responseContainer.innerHTML = `<p class="no-result" style="color: #d9534f; border-color: #d9534f;">无效的Token, 请输入正确的Token。</p>`;
-            return; // 结束函数
+            return;
         }
 
         let awardList = null;
@@ -63,29 +108,10 @@ async function sendRequest() {
         if (awardList && awardList.length > 0) {
             awardList.forEach((item, index) => {
                 const price = (item.awardPrice / 100).toFixed(2);
-                
-                // --- 时间格式化修改部分 ---
                 const date = new Date(item.ctime);
-                
-                // 1. 使用 toLocaleString 获取在上海时区的 年-月-日 时:分:秒
-                const dateTimeString = date.toLocaleString('zh-CN', {
-                    timeZone: 'Asia/Shanghai',
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                    hour12: false
-                }).replace(/\//g, '-');
-
-                // 2. 单独获取毫秒数，并用 padStart 补足3位（例如 5 -> 005）
+                const dateTimeString = date.toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).replace(/\//g, '-');
                 const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
-                
-                // 3. 将两者拼接起来
                 const ctime = `${dateTimeString}.${milliseconds}`;
-                // --- 修改结束 ---
-
                 let statusText = '';
                 switch (item.status) {
                     case 0: statusText = '没免单'; break;
@@ -93,7 +119,6 @@ async function sendRequest() {
                     case 2: statusText = '免单已打款'; break;
                     default: statusText = `未知状态 (${item.status})`;
                 }
-
                 const card = document.createElement('div');
                 card.className = 'result-card';
                 if (index === 0) { card.classList.add('latest'); }
@@ -105,7 +130,6 @@ async function sendRequest() {
                 responseContainer.appendChild(card);
             });
         } else {
-            // 处理登录成功但无免单记录的情况
             responseContainer.innerHTML = '<p class="no-result">登录成功，您没有被免单过。<br>Lemon祝您下次成功免单！</p>';
         }
     } catch (error) {
