@@ -43,20 +43,10 @@
             transition: all 0.3s ease;
         }
         
-        /* --- 登录界面样式 --- */
-        #login-container {
-            max-width: 400px;
-        }
-        #login-container h2 {
-            text-align: center;
-            margin-bottom: 25px;
-            font-size: 28px;
-        }
+        #login-container { max-width: 400px; }
+        #login-container h2 { text-align: center; margin-bottom: 25px; font-size: 28px; }
         .form-group { margin-bottom: 20px; }
-        label {
-            display: block; margin-bottom: 8px; font-weight: 600;
-            font-size: 14px; color: var(--text-secondary);
-        }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-secondary); }
         input[type="text"], input[type="password"] {
             width: 100%; padding: 12px 15px; border: 1px solid var(--border-color);
             border-radius: 8px; font-size: 16px;
@@ -66,15 +56,24 @@
             outline: none; border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.25);
         }
-        #login-error {
-            color: var(--error-color);
-            text-align: center;
-            margin-top: 15px;
-            min-height: 20px;
-            font-size: 14px;
+        #login-error { color: var(--error-color); text-align: center; margin-top: 15px; min-height: 20px; font-size: 14px; }
+        .remember-me-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            margin-top: -10px;
         }
-
-        /* --- 主应用样式 (大部分从之前继承) --- */
+        .remember-me-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+        .remember-me-group label {
+            margin-bottom: 0;
+            color: var(--text-secondary);
+            font-weight: 500;
+            cursor: pointer;
+        }
         .header { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 10px; }
         .header h2 { font-size: 28px; font-weight: 700; }
         .header .icon { width: 32px; height: 32px; color: var(--primary-color); }
@@ -122,36 +121,38 @@
         <label for="password">密码</label>
         <input type="password" id="password" placeholder="请输入您的密码">
     </div>
-    <button class="primary-btn" onclick="handleLogin()">登录</button>
+    
+    <div class="form-group remember-me-group">
+        <input type="checkbox" id="remember-me">
+        <label for="remember-me">记住密码</label>
+    </div>
+    
+    <!-- 关键修改：移除了 onclick，增加了 id -->
+    <button class="primary-btn" id="login-btn">登录</button>
     <p id="login-error"></p>
 </div>
 
 <!-- 主查询界面 (默认隐藏) -->
 <div id="main-container" class="container" style="display: none;">
+    <!-- ... (内容无变化) ... -->
     <div class="header">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M21.218 15.71a1.001 1.001 0 0 0-1.07-1.07l-2.43 1.215-2.06-3.568-3.21-1.854 1.252-2.168a1 1 0 0 0-.5-1.866l-4-1A1 1 0 0 0 8 8.163v4.612l-4.79-2.766a1.002 1.002 0 0 0-1.378.373 1 1 0 0 0 .377 1.378l4.43 2.557-2.126 3.682a1.002 1.002 0 0 0 .208 1.403 1 1 0 0 0 1.402-.208l1.92-3.325L12 18.001v2a1 1 0 0 0 1.866.5l4-7a1.002 1.002 0 0 0-.648-1.791zm-9.352-5.768L14.4 11.52l-2.534 1.463v-3.05l-1-1.732zM12 16.08l-2.28-1.316.96-1.662L13 14.505l-1 1.575z"></path></svg>
         <h2>Lemon美団外卖兔单查询</h2>
     </div>
-    
-    <p>仅需粘贴 Token, 即刻查询您的免单记录。</p>
-    
+    <p>仅需粘贴 Token, 即刻查询您的兔单记录。</p>
     <button class="promo-btn" onclick="toggleQRCodeModal()">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M0 2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H5ZM8 0a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2ZM13 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1h-1ZM3 5a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H3Zm0 5a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H3Zm0-4a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H3Zm-2 4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H8Zm3-3a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v1Zm1 4a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-1Zm2-1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v1ZM8 12a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v1Zm-5 1a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v2Zm2-1a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-1Zm5-1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H8Zm3 0a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-2Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-1Z"/></svg>
         <span>扫码关注一手线报</span>
     </button>
-
     <div class="form-group">
         <label for="token">用户TOKEN</label>
         <textarea id="token" rows="4" placeholder="在此处粘贴您获取的Token值或包含Token的文本"></textarea>
     </div>
-
     <button class="primary-btn" onclick="sendRequest()">立即查询</button>
-
     <h3 class="results-header">查询结果</h3>
     <div id="response">
         <p class="no-result">等待查询中...</p>
     </div>
-    
     <footer>Crafted for simplicity and convenience.</footer>
 </div>
 
@@ -163,9 +164,6 @@
     </div>
 </div>
 
-<!-- 引用外部 JavaScript 文件 -->
 <script src="ee.js"></script>
-
 </body>
 </html>
-
