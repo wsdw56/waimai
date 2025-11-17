@@ -348,4 +348,34 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     merchantListDiv.addEventListener('click', (e) => {
-        const target = e.targ
+        const target = e.target.closest('.btn');
+        if (!target) return;
+        const scheme = target.dataset.scheme;
+        if (target.classList.contains('copy-link-btn')) {
+            navigator.clipboard.writeText(scheme).then(() => {
+                const originalText = target.textContent;
+                target.textContent = '已复制!';
+                target.disabled = true;
+                setTimeout(() => { 
+                    target.textContent = originalText;
+                    target.disabled = false;
+                }, 2000);
+            });
+        } else if (target.classList.contains('qr-code-btn')) {
+            qrCodeImg.src = `https://api.2dcode.biz/v1/create-qr-code?data=${encodeURIComponent(scheme)}&size=256`;
+            openModal(qrModal);
+        }
+    });
+
+    debugUnlockButton.addEventListener('click', () => {
+        if (debugModeEnabled) {
+            debugModeEnabled = false;
+            debugUnlockButton.innerHTML = '&#128274; 上锁';
+            debugUnlockButton.style.backgroundColor = 'var(--secondary-color)';
+            rawResponseContainer.style.display = 'none';
+        } else {
+            openModal(debugPasswordModal);
+            debugPasswordInput.focus();
+        }
+    });
+});
