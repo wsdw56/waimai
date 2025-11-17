@@ -3,78 +3,289 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>美团API商家信息提取器 (自动定位版)</title>
+    <title>Lemon兔单无视入口终极版</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.6; padding: 20px; background-color: #f4f4f9; color: #333; }
-        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h1 { color: #333; text-align: center; }
-        #tokenInput { width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; margin-bottom: 15px; }
-        .button-group { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .button-group button { padding: 12px; font-size: 16px; color: #fff; border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.2s; }
-        #prevButton { background-color: #6c757d; }
-        #queryButton { background-color: #007bff; }
-        #nextButton { background-color: #28a745; }
-        .button-group button:disabled { background-color: #a0a0a0; cursor: not-allowed; }
-        #status { font-weight: bold; color: #337ab7; padding: 10px; background-color: #e7f3fe; border: 1px solid #bce8f1; border-radius: 4px; margin-top: 15px; text-align: center;}
-        #results { margin-top: 20px; }
-        .page-section { border: 1px solid #ddd; border-radius: 5px; background: #fff; }
-        .page-header { background-color: #f7f7f7; padding: 10px 15px; border-bottom: 1px solid #ddd; font-weight: bold; color: #d9534f; border-radius: 5px 5px 0 0; }
+        :root {
+            --primary-color: #0d6efd;
+            --primary-hover: #0b5ed7;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --light-gray: #f8f9fa;
+            --border-color: #dee2e6;
+            --text-color: #212529;
+            --text-muted: #6c757d;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --border-radius: 12px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            line-height: 1.7;
+            padding: 20px;
+            background-color: var(--light-gray);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .card {
+            background: #fff;
+            padding: 25px 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 25px;
+        }
         
-        /* 商家列表样式 */
-        #merchantList { padding: 10px 15px; max-height: 60vh; overflow-y: auto; }
-        .merchant-item { border-bottom: 1px solid #eee; padding: 15px 5px; display: grid; grid-template-columns: 1fr auto; gap: 15px; }
-        .merchant-item:last-child { border-bottom: none; }
-        .merchant-info h3 { margin: 0 0 5px 0; font-size: 16px; color: #333; }
-        .merchant-info p { margin: 0; font-size: 14px; color: #777; }
-        .action-buttons { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; justify-content: center; }
-        .action-buttons .btn { display: inline-block; text-decoration: none; color: white; padding: 6px 14px; border-radius: 20px; font-size: 13px; white-space: nowrap; transition: background-color 0.2s; border: none; cursor: pointer; text-align: center; min-width: 90px; }
-        .btn.direct-link-btn { background-color: #ff8c00; }
-        .btn.direct-link-btn:hover { background-color: #e07b00; }
-        .btn.copy-link-btn { background-color: #17a2b8; }
-        .btn.copy-link-btn:hover { background-color: #138496; }
-        .btn.qr-code-btn { background-color: #28a745; }
-        .btn.qr-code-btn:hover { background-color: #218838; }
+        /* --- 登录界面样式 --- */
+        #loginContainer {
+            max-width: 400px;
+            margin: auto;
+        }
+        #loginContainer h1 {
+            font-size: 24px;
+        }
+        #loginError {
+            color: var(--danger-color);
+            text-align: center;
+            margin-top: 10px;
+            height: 20px;
+        }
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            color: var(--text-muted);
+        }
+        .remember-me input {
+            margin-right: 8px;
+        }
+        #loginButton {
+            width: 100%;
+            background-color: var(--primary-color);
+        }
+        
+        #appContainer {
+            display: none; /* 默认隐藏 */
+        }
 
-        /* 页码导航样式 */
-        .pagination { text-align: center; margin-top: 10px; padding-top: 5px; }
-        .pagination button { background-color: #fff; border: 1px solid #ddd; color: #007bff; padding: 6px 12px; margin: 0 3px; cursor: pointer; border-radius: 4px; }
+        h1 {
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .form-group input[type="text"], .form-group input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.2);
+        }
+        
+        .control-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: var(--light-gray);
+            border-radius: 8px;
+        }
+        .control-row label {
+             font-weight: 500;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .switch input { display:none; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 28px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 20px; width: 20px;
+            left: 4px; bottom: 4px; background-color: white;
+            transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--primary-color); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        #customCoordsContainer {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .btn, .button-group button {
+            padding: 12px; font-size: 16px; color: #fff; border: none;
+            border-radius: 6px; cursor: pointer; transition: background-color 0.2s, transform 0.1s;
+            font-weight: 500;
+        }
+        .btn:active, .button-group button:active { transform: scale(0.98); }
+
+        .button-group { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 10px; margin-bottom: 10px; }
+        #prevButton { background-color: var(--secondary-color); }
+        #queryButton { background-color: var(--primary-color); }
+        #nextButton { background-color: var(--success-color); }
+        .button-group button:disabled { background-color: #a0a0a0; cursor: not-allowed; opacity: 0.7; }
+
+        .pagination { text-align: center; margin-bottom: 15px; }
+        .pagination button, .pagination span {
+            display: inline-block;
+            background-color: #fff; border: 1px solid var(--border-color); color: var(--primary-color);
+            padding: 6px 12px; margin: 0 3px; cursor: pointer; border-radius: 4px;
+            transition: background-color 0.2s;
+        }
         .pagination button:hover { background-color: #e9ecef; }
-        .pagination button.active { background-color: #007bff; color: white; cursor: default; }
+        .pagination button.active { background-color: var(--primary-color); color: white; cursor: default; border-color: var(--primary-color); }
+        .pagination span { border: none; cursor: default; }
+        
+        #status { font-weight: 500; text-align: center; padding: 12px; border-radius: 6px; transition: all 0.3s;}
+        .status-info { background-color: #cff4fc; color: #055160; }
+        .status-success { background-color: #d1e7dd; color: #0f5132; }
+        .status-error { background-color: #f8d7da; color: #842029; }
 
-        /* 二维码弹窗样式 */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
-        .modal-content { background-color: #fefefe; padding: 20px; border: 1px solid #888; width: 280px; text-align: center; border-radius: 8px; position: relative; }
-        .modal-content img { max-width: 100%; height: auto; }
+        .page-header { padding-bottom: 10px; border-bottom: 1px solid var(--border-color); margin-bottom: 10px; font-weight: 700; font-size: 18px; }
+        
+        #merchantList { max-height: 60vh; overflow-y: auto; padding-right: 10px; }
+        .merchant-item { border-bottom: 1px solid var(--border-color); padding: 15px 5px; display: grid; grid-template-columns: 1fr auto; gap: 15px; align-items: center; }
+        .merchant-item:last-child { border-bottom: none; }
+        .merchant-info h3 { margin: 0 0 5px 0; font-size: 17px; font-weight: 500; }
+        .merchant-info p { margin: 0; font-size: 14px; color: var(--text-muted); }
+        .action-buttons { display: flex; gap: 8px; }
+        .action-buttons .btn {
+            font-size: 13px; padding: 6px 14px;
+            border-radius: 20px; min-width: 90px;
+        }
+        .btn:hover { opacity: 0.9; }
+        .btn.direct-link-btn { background-color: #ff8c00; }
+        .btn.copy-link-btn { background-color: #0dcaf0; }
+        .btn.qr-code-btn { background-color: var(--success-color); }
+
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+        .modal-content { background-color: #fff; padding: 20px; width: 280px; text-align: center; border-radius: var(--border-radius); position: relative; }
         .close-btn { position: absolute; top: 5px; right: 15px; color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
-        .close-btn:hover, .close-btn:focus { color: black; text-decoration: none; }
+        
+        #rawResponseContainer { display:none; margin-top: 20px; }
+        #rawResponseContainer pre { background-color: #212529; color: #f8f9fa; padding: 15px; border-radius: 6px; white-space: pre-wrap; word-wrap: break-word; max-height: 400px; overflow-y: auto; font-size: 13px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>美团接口商家信息提取器 (自动定位版)</h1>
-        <p><strong>重要提示：</strong>点击“查询”后，浏览器会请求您的地理位置权限。**请务必点击“允许”**，否则无法查询您附近的商家。</p>
-        
-        <label for="tokenInput">请输入 Token:</label>
-        <input type="text" id="tokenInput" placeholder="在此处粘贴您的Token">
 
-        <div class="button-group">
-            <button id="prevButton" disabled>上一页</button>
-            <button id="queryButton">查询</button>
-            <button id="nextButton" disabled>下一页</button>
+    <div class="main-container">
+        <!-- 登录界面 -->
+        <div id="loginContainer" class="card">
+            <h1>查询器登录</h1>
+            <div class="form-group">
+                <label for="usernameInput">账号</label>
+                <input type="text" id="usernameInput" placeholder="请输入账号">
+            </div>
+            <div class="form-group">
+                <label for="passwordInput">密码</label>
+                <input type="password" id="passwordInput" placeholder="请输入密码">
+            </div>
+            <div class="remember-me">
+                <input type="checkbox" id="rememberMeCheckbox">
+                <label for="rememberMeCheckbox">记住我</label>
+            </div>
+            <button id="loginButton" class="btn">登录</button>
+            <div id="loginError"></div>
         </div>
-        <div id="paginationControls" class="pagination"></div>
-        <p id="status">状态：准备就绪</p>
-    </div>
 
-    <div class="container" id="results">
-        <div class="page-section">
-            <div class="page-header" id="responseHeader">商家列表</div>
-            <div id="merchantList">
-                <p style="text-align: center; color: #888;">请点击“查询”按钮开始请求...</p>
+        <!-- 主应用界面 -->
+        <div id="appContainer">
+            <h1>Lemon兔单无视入口终极版</h1>
+            <div class="card">
+                <div class="form-group">
+                    <label for="tokenInput">请输入 Token:</label>
+                    <input type="text" id="tokenInput" placeholder="在此处粘贴您的Token">
+                </div>
+                <div class="control-row">
+                    <label for="customCoordsToggle">自定义经纬度</label>
+                    <label class="switch">
+                        <input type="checkbox" id="customCoordsToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div id="customCoordsContainer">
+                    <div class="form-group">
+                        <label for="latitudeInput">纬度 (Latitude)</label>
+                        <input type="text" id="latitudeInput" placeholder="例如: 31.2304">
+                    </div>
+                    <div class="form-group">
+                        <label for="longitudeInput">经度 (Longitude)</label>
+                        <input type="text" id="longitudeInput" placeholder="例如: 121.4737">
+                    </div>
+                </div>
+                 <div class="control-row">
+                    <label>开启调试模式 (显示原始响应)</label>
+                    <button id="debugUnlockButton" class="btn" style="background-color: var(--secondary-color); font-size: 14px; padding: 8px 16px;">&#128274; 上锁</button>
+                </div>
+            </div>
+
+            <div class="card">
+                 <div class="button-group">
+                    <button id="prevButton" disabled>上一页</button>
+                    <button id="queryButton">开始查询</button>
+                    <button id="nextButton" disabled>下一页</button>
+                </div>
+                <div id="paginationControls" class="pagination"></div>
+                <div id="status" class="status-info">状态：准备就绪</div>
+            </div>
+
+            <div class="card" id="results">
+                <div class="page-header" id="responseHeader">商家列表</div>
+                <div id="merchantList"><p style="text-align: center; color: var(--text-muted);">请点击“开始查询”按钮开始请求...</p></div>
+                <div id="rawResponseContainer">
+                    <h4 class="page-header">原始响应数据 (Raw Response)</h4>
+                    <pre><code id="rawResponseOutput"></code></pre>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- 二维码 Modal -->
     <div id="qrModal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
@@ -82,275 +293,7 @@
             <img id="qrCodeImg" src="" alt="QR Code">
         </div>
     </div>
-
-<script>
-    const apiUrl = 'https://adapi.waimai.meituan.com/api/ad/landingPage';
-
-    // Elements
-    const queryButton = document.getElementById('queryButton');
-    const nextButton = document.getElementById('nextButton');
-    const prevButton = document.getElementById('prevButton');
-    const tokenInput = document.getElementById('tokenInput');
-    const statusDiv = document.getElementById('status');
-    const responseHeader = document.getElementById('responseHeader');
-    const merchantListDiv = document.getElementById('merchantList');
-    const paginationControls = document.getElementById('paginationControls');
-    const qrModal = document.getElementById('qrModal');
-    const qrCodeImg = document.getElementById('qrCodeImg');
-    const closeBtn = document.querySelector('.close-btn');
     
-    tokenInput.value = 'AgF2J3zrwXL8QIPaOQhL_D_1jje-fbTxFBd0gTKsWxAe6am2ORrTp8KT4rhYk5qWmKkWyI9mgTDmvAAAAAD1LgAA-byxioMtN1OG3Ot1iKBHi6jF61tNCzC6VSP32umUyMw3opOfoO10khlciGWH2gXM';
-
-    // State
-    let currentPageNum = 0;
-    let pageCache = [];
-    let isFetching = false;
-    let userLatitude = null;
-    let userLongitude = null;
-
-    // --- NEW: Geolocation Function ---
-    function getUserLocation() {
-        return new Promise((resolve, reject) => {
-            if (!navigator.geolocation) {
-                reject({ code: -1, message: "您的浏览器不支持地理定位。" });
-            } else {
-                navigator.geolocation.getCurrentPosition(resolve, reject, {
-                    enableHighAccuracy: true,
-                    timeout: 8000,
-                    maximumAge: 0
-                });
-            }
-        });
-    }
-
-    async function fetchData(pageNum, wmContext, token) {
-        updateStatus(`正在请求第 ${pageNum + 1} 页...`);
-        // 使用获取到的用户经纬度
-        const baseParams = new URLSearchParams({
-            notitlebar: '1', future: '2', scene_id: '179', entry: 'tiantianmiandan',
-            wmUserIdDeregistration: '0', wmUuidDeregistration: '1', wm_appversion: '12.46.403',
-            wm_ctype: 'mtandroid', userid: '5543192494', 
-            uuid: '000000000000005100380EF384E64B6B41161CD779322A174200374470317960',
-            personalized: '1', platform: '4', 
-            wm_latitude: userLatitude, // 动态
-            poilist_mt_cityid: '157', // 注意: 这个城市ID可能需要根据经纬度反向解析, 但目前API似乎不强制
-            wm_actual_longitude: userLongitude, // 动态
-            content_personalized_switch: '0',
-            ad_personalized_switch: '0', wm_visitid: '7fd0a8af-6278-4878-9fd4-17ad423cc5ac',
-            wm_dversion: '33_13', push_token: 'dpshddfdded7858bc51ace78bf56d28b8d2aatpu',
-            app: '0', poilist_wm_cityid: '211000', // 注意: 这个城市ID可能也需要更新
-            wm_longitude: userLongitude, // 动态
-            wm_actual_latitude: userLatitude, // 动态
-            wm_pwh: '1', f: 'android', version: '12.46.403',
-            app_model: '0', wm_dtype: 'M2011K2C',
-            wm_uuid: '000000000000005100380EF384E64B6B41161CD779322A174200374470317960',
-            partner: '4', utm_term: '1200460403', utm_campaign: 'AgroupBgroupC0D500E0Ghomepage',
-            ci: '157', utm_medium: 'android', utm_source: 'xiaomi', utm_content: '',
-            region_id: '1000341300', region_version: '1763347289584', entry_channel: '2',
-            page_size: '10', filterInfo: '', sortType: '0', clicked_poi_str: '',
-            clicked_poi_channel: '', ad_page_type: '0',
-            token: token,
-            wm_logintoken: token,
-            page_num: pageNum,
-            wm_context: wmContext || '',
-        });
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: baseParams.toString(),
-            });
-            if (!response.ok) throw new Error(`HTTP 错误! 状态: ${response.status}`);
-            return await response.json();
-        } catch (error) {
-            console.error('请求失败:', error);
-            updateStatus(`请求失败: ${error.message}。请检查浏览器控制台以获取CORS错误详情。`);
-            return null;
-        }
-    }
-    
-    function updateStatus(message) { statusDiv.textContent = `状态：${message}`; }
-    
-    function setButtonsState(loading) {
-        isFetching = loading;
-        queryButton.disabled = loading;
-        if (!loading) {
-            prevButton.disabled = currentPageNum <= 0;
-            const hasNextPage = pageCache[currentPageNum]?.data?.json_data?.page?.hasNextPage;
-            nextButton.disabled = !hasNextPage;
-        } else {
-            prevButton.disabled = true;
-            nextButton.disabled = true;
-        }
-        renderPagination();
-    }
-    
-    function renderPagination() {
-        paginationControls.innerHTML = '';
-        if (pageCache.length === 0) return;
-        pageCache.forEach((_, index) => {
-            const pageButton = document.createElement('button');
-            pageButton.textContent = index + 1;
-            if (index === currentPageNum) {
-                pageButton.classList.add('active');
-            }
-            pageButton.onclick = () => { displayPage(index); };
-            paginationControls.appendChild(pageButton);
-        });
-    }
-
-    function displayPage(pageIndex) {
-        const responseData = pageCache[pageIndex];
-        if (!responseData) return;
-
-        currentPageNum = pageIndex;
-        responseHeader.textContent = `商家列表 - 第 ${currentPageNum + 1} 页`;
-        merchantListDiv.innerHTML = '';
-
-        const moduleList = responseData.data?.module_list;
-        if (!moduleList || moduleList.length === 0) {
-            merchantListDiv.innerHTML = '<p style="text-align: center; color: #888;">当前页没有商家信息。</p>';
-            setButtonsState(false);
-            return;
-        }
-
-        moduleList.forEach(item => {
-            try {
-                const stringData = JSON.parse(item.string_data);
-                const adData = JSON.parse(stringData.ad_data);
-                const name = adData.poi_name || '未知商家';
-                const distance = adData.distance || '未知距离';
-                const scheme = adData.scheme;
-
-                if (scheme) {
-                    const merchantElement = document.createElement('div');
-                    merchantElement.className = 'merchant-item';
-                    
-                    const infoDiv = document.createElement('div');
-                    infoDiv.className = 'merchant-info';
-                    infoDiv.innerHTML = `<h3>${name}</h3><p>距离：${distance}</p>`;
-                    
-                    const buttonsDiv = document.createElement('div');
-                    buttonsDiv.className = 'action-buttons';
-                    
-                    const directLink = document.createElement('a');
-                    directLink.href = scheme;
-                    directLink.className = 'btn direct-link-btn';
-                    directLink.textContent = '点此直达';
-                    directLink.target = '_blank';
-
-                    const copyBtn = document.createElement('button');
-                    copyBtn.className = 'btn copy-link-btn';
-                    copyBtn.textContent = '复制链接';
-                    copyBtn.onclick = (e) => {
-                        navigator.clipboard.writeText(scheme).then(() => {
-                            e.target.textContent = '已复制!';
-                            setTimeout(() => { e.target.textContent = '复制链接'; }, 2000);
-                        });
-                    };
-
-                    const qrBtn = document.createElement('button');
-                    qrBtn.className = 'btn qr-code-btn';
-                    qrBtn.textContent = '生成二维码';
-                    qrBtn.onclick = () => {
-                        const qrApiUrl = `https://api.2dcode.biz/v1/create-qr-code?data=${encodeURIComponent(scheme)}`;
-                        openModal(qrApiUrl);
-                    };
-
-                    buttonsDiv.appendChild(directLink);
-                    buttonsDiv.appendChild(copyBtn);
-                    buttonsDiv.appendChild(qrBtn);
-                    merchantElement.appendChild(infoDiv);
-                    merchantElement.appendChild(buttonsDiv);
-                    merchantListDiv.appendChild(merchantElement);
-                }
-            } catch (e) {
-                console.error("解析商家数据失败:", e, "错误的item:", item);
-            }
-        });
-        updateStatus(`已显示第 ${currentPageNum + 1} 页的数据。`);
-        setButtonsState(false);
-    }
-    
-    async function fetchAndCachePage(pageIndex) {
-        if (pageCache[pageIndex]) {
-            displayPage(pageIndex);
-            return;
-        }
-        const tokenValue = tokenInput.value.trim();
-        if (!tokenValue) { alert('请输入Token！'); return; }
-        if (isFetching) return;
-        setButtonsState(true);
-
-        const wmContext = pageIndex > 0 ? pageCache[pageIndex - 1].data.json_data.wm_context : '';
-        const responseData = await fetchData(pageIndex, wmContext, tokenValue);
-
-        if (responseData && responseData.code === 0) {
-            pageCache[pageIndex] = responseData;
-            displayPage(pageIndex);
-        } else {
-            updateStatus(`请求第 ${pageIndex + 1} 页失败，请重试。`);
-            merchantListDiv.innerHTML = `<p style="text-align: center; color: #d9534f;">请求失败，请检查Token或网络后重试。</p>`;
-            setButtonsState(false);
-        }
-    }
-
-    function openModal(qrUrl) {
-        qrCodeImg.src = qrUrl;
-        qrModal.style.display = 'flex';
-    }
-    function closeModal() {
-        qrModal.style.display = 'none';
-        qrCodeImg.src = '';
-    }
-    closeBtn.onclick = closeModal;
-    window.onclick = function(event) { if (event.target == qrModal) { closeModal(); } };
-
-    // --- UPDATED: Query Button Event Listener ---
-    queryButton.addEventListener('click', async () => {
-        currentPageNum = 0;
-        pageCache = [];
-        merchantListDiv.innerHTML = '';
-        paginationControls.innerHTML = '';
-        responseHeader.textContent = '商家列表';
-        queryButton.disabled = true;
-
-        updateStatus("正在请求地理位置权限...");
-        try {
-            const position = await getUserLocation();
-            // Convert coordinates to the format required by the API
-            userLatitude = Math.round(position.coords.latitude * 1000000);
-            userLongitude = Math.round(position.coords.longitude * 1000000);
-            updateStatus(`位置获取成功: ${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)}`);
-            
-            // Now, start fetching data with the new location
-            await fetchAndCachePage(0);
-
-        } catch (error) {
-            let errorMessage = "获取地理位置时发生未知错误。";
-            if (error.code) {
-                switch(error.code) {
-                    case error.PERMISSION_DENIED:
-                        errorMessage = "获取地理位置失败，您拒绝了请求。请允许位置权限后重试。";
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        errorMessage = "无法获取当前位置信息。";
-                        break;
-                    case error.TIMEOUT:
-                        errorMessage = "获取位置信息超时。";
-                        break;
-                }
-            } else {
-                errorMessage = error.message;
-            }
-            updateStatus(errorMessage);
-            alert(errorMessage);
-            queryButton.disabled = false;
-        }
-    });
-
-    nextButton.addEventListener('click', () => { fetchAndCachePage(currentPageNum + 1); });
-    prevButton.addEventListener('click', () => { if (currentPageNum > 0) { displayPage(currentPageNum - 1); } });
-</script>
+    <script src="jttt.js" defer></script>
 </body>
 </html>
