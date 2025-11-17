@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginButton = document.getElementById('loginButton');
     const loginError = document.getElementById('loginError');
     const logoutButton = document.getElementById('logoutButton');
-    const pasteTokenButton = document.getElementById('pasteTokenButton');
     const clearTokenButton = document.getElementById('clearTokenButton');
     const queryButton = document.getElementById('queryButton');
     const nextButton = document.getElementById('nextButton');
@@ -51,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 应用状态 ---
     let currentPageNum = 0, pageCache = [], isFetching = false, userLatitude = null, userLongitude = null, debugModeEnabled = false;
-    let parsedTokenCache = ''; // 新增: 用于在后台缓存解析好的Token
+    let parsedTokenCache = '';
 
     // --- 登录/登出逻辑 ---
     function handleLogin() {
@@ -130,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setButtonsState(true);
 
         const wmContext = pageIndex > 0 ? pageCache[pageIndex - 1].data.json_data.wm_context : '';
-        // --- 修改: 直接使用后台缓存的 `parsedTokenCache` ---
         const responseData = await fetchData(pageIndex, wmContext, parsedTokenCache);
 
         if (responseData?.code === 0) {
@@ -259,39 +257,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 事件监听器 ---
     loginButton.addEventListener('click', handleLogin);
     passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
-    logoutButton.addEventListener('click', () => openModal(confirmModal));
     
-    customCoordsToggle.addEventListener('change', () => { customCoordsContainer.classList.toggle('active', customCoordsToggle.checked); });
-    
-    // --- 修改: 粘贴时显示原文，但在后台解析并缓存 ---
     const handlePaste = (text) => {
-        tokenInput.value = text; // 界面显示原文
-        parsedTokenCache = parseToken(text); // 后台解析并缓存
+        tokenInput.value = text;
+        parsedTokenCache = parseToken(text);
     };
     
     tokenInput.addEventListener('paste', (e) => { e.preventDefault(); handlePaste(e.clipboardData.getData('text')); });
     
-    // 新增：监听输入框的手动输入，实时更新后台缓存的token
     tokenInput.addEventListener('input', () => {
         parsedTokenCache = parseToken(tokenInput.value);
     });
 
-    pasteTokenButton.addEventListener('click', async () => {
-        try { 
-            const text = await navigator.clipboard.readText();
-            handlePaste(text);
-        } catch (err) { 
-            showAlert('无法从剪贴板读取内容，请手动粘贴。'); 
-        }
-    });
-
     clearTokenButton.addEventListener('click', () => {
         tokenInput.value = '';
-        parsedTokenCache = ''; // 同时清空后台缓存
+        parsedTokenCache = '';
     });
 
     queryButton.addEventListener('click', async () => {
-        // --- 修改: 现在只需检查后台缓存的token即可 ---
         if (!parsedTokenCache) {
             showAlert('错误：Token无效或为空，请粘贴有效的Token或Cookie！');
             updateStatus("错误：Token无效或为空。", "error"); return;
@@ -331,60 +314,38 @@ document.addEventListener('DOMContentLoaded', () => {
     nextButton.addEventListener('click', () => fetchAndCachePage(currentPageNum + 1));
     prevButton.addEventListener('click', () => { if (currentPageNum > 0) displayPage(currentPageNum - 1); });
     
-    // --- 修复: 确保所有关闭按钮都能正确工作 ---
-    [qrCloseBtn, cancelLogoutBtn, cancelDebugBtn, closeAlertBtn].forEach(btn => {
-        if (btn) {
-            btn.onclick = () => closeModal(btn.closest('.modal'));
+    // --- 修复: 确保所有模态框的关闭按钮都能正确绑定事件 ---
+    [qrCloseBtn, cancelLogoutBtn, cancelDebugBtn, closeAlertBtn, confirmLogoutBtn, confirmDebugBtn].forEach(btn => {
+        if (btn) { // 检查按钮是否存在
+            const modal = btn.closest('.modal');
+            if (btn.id.startsWith('cancel') || btn.id.startsWith('close')) {
+                btn.onclick = () => closeModal(modal);
+            } else if (btn.id.startsWith('confirmLogout')) {
+                btn.onclick = performLogout;
+            } else if (btn.id.startsWith('confirmDebug')) {
+                btn.onclick = () => {
+                    if (debugPasswordInput.value === DEBUG_PASSWORD) {
+                        debugModeEnabled = true;
+                        alert('调试模式已开启！');
+                        debugUnlockButton.innerHTML = '&#128275; 解锁';
+                        debugUnlockButton.style.backgroundColor = 'var(--success-color)';
+                        if (pageCache.length > 0) displayPage(currentPageNum);
+                    } else {
+                        showAlert('调试密码错误！');
+                    }
+                    closeModal(modal);
+                };
+            } else if (qrCloseBtn) {
+                 qrCloseBtn.onclick = () => closeModal(qrModal);
+            }
         }
     });
-    confirmLogoutBtn.onclick = performLogout;
     
-    confirmDebugBtn.addEventListener('click', () => {
-        if(debugPasswordInput.value === DEBUG_PASSWORD) {
-            debugModeEnabled = true;
-            alert('调试模式已开启！');
-            debugUnlockButton.innerHTML = '&#128275; 解锁';
-            debugUnlockButton.style.backgroundColor = 'var(--success-color)';
-            if(pageCache.length > 0) displayPage(currentPageNum);
-        } else {
-            showAlert('调试密码错误！');
-        }
-        closeModal(debugPasswordModal);
-    });
+    logoutButton.addEventListener('click', () => openModal(confirmModal));
 
     window.onclick = (event) => { 
         if (event.target.classList.contains('modal')) closeModal(event.target);
     };
 
     merchantListDiv.addEventListener('click', (e) => {
-        const target = e.target.closest('.btn');
-        if (!target) return;
-        const scheme = target.dataset.scheme;
-        if (target.classList.contains('copy-link-btn')) {
-            navigator.clipboard.writeText(scheme).then(() => {
-                const originalText = target.textContent;
-                target.textContent = '已复制!';
-                target.disabled = true;
-                setTimeout(() => { 
-                    target.textContent = originalText;
-                    target.disabled = false;
-                }, 2000);
-            });
-        } else if (target.classList.contains('qr-code-btn')) {
-            qrCodeImg.src = `https://api.2dcode.biz/v1/create-qr-code?data=${encodeURIComponent(scheme)}&size=256`;
-            openModal(qrModal);
-        }
-    });
-
-    debugUnlockButton.addEventListener('click', () => {
-        if (debugModeEnabled) {
-            debugModeEnabled = false;
-            debugUnlockButton.innerHTML = '&#128274; 上锁';
-            debugUnlockButton.style.backgroundColor = 'var(--secondary-color)';
-            rawResponseContainer.style.display = 'none';
-        } else {
-            openModal(debugPasswordModal);
-            debugPasswordInput.focus();
-        }
-    });
-});
+        const target = e.targ
