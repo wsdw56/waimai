@@ -22,17 +22,17 @@
             font-family: 'Noto Sans SC', sans-serif; line-height: 1.7;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             margin: 0; display: flex; justify-content: center; align-items: flex-start; 
-            min-height: 100vh; padding: 15px;
+            min-height: 100vh; padding: 10px;
         }
         .main-container { max-width: 900px; width: 100%; padding-top: 2vh; }
         .card {
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px);
-            padding: 30px; border-radius: var(--border-radius);
-            box-shadow: var(--card-shadow); margin-bottom: 25px;
+            padding: 25px; border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow); margin-bottom: 20px;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        #loginContainer { max-width: 420px; margin: 10vh auto 0; animation: fadeInFromBottom 0.6s ease-out forwards; }
+        #loginContainer { max-width: 420px; margin: 5vh auto 0; animation: fadeInFromBottom 0.6s ease-out forwards; }
         @keyframes fadeInFromBottom { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .login-header { text-align: center; margin-bottom: 35px; }
         .login-header .icon {
@@ -40,7 +40,7 @@
             color: white; padding: 18px; border-radius: 50%;
             margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
         }
-        #loginContainer h1 { font-size: 26px; font-weight: 700; margin: 0; }
+        #loginContainer h1 { font-size: 24px; font-weight: 700; margin: 0; }
         
         .form-control { position: relative; margin-bottom: 25px; }
         .form-control input {
@@ -112,25 +112,23 @@
         
         #merchantList { max-height: 65vh; overflow-y: auto; padding-right: 10px; }
         
-        /* --- 全新紧凑布局 --- */
         .merchant-item { 
             background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.2s ease-out; 
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            flex-direction: column; 
+            align-items: flex-start; 
             gap: 15px;
         }
         .merchant-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         
-        .merchant-info { flex-grow: 1; min-width: 0; /* 防止flex项目溢出 */ }
-        .merchant-info h3 { margin: 0 0 4px 0; font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .merchant-info h3 { margin: 0 0 4px 0; font-size: 16px; font-weight: 700; white-space: normal; }
         .merchant-info p { margin: 0; font-size: 13px; color: var(--text-muted); }
         
-        .action-buttons { display: flex; gap: 8px; flex-shrink: 0; }
+        .action-buttons { display: flex; gap: 8px; width: 100%; }
         .action-buttons .btn { 
-            font-size: 13px; font-weight: 500; padding: 6px 12px;
-            border-radius: 6px;
+            font-size: 13px; font-weight: 500; padding: 8px 12px;
+            border-radius: 6px; flex-grow: 1; 
         }
         .action-buttons .direct-link-btn { background-color: var(--primary-color); }
         .action-buttons .direct-link-btn:hover { background-color: var(--primary-hover); }
@@ -159,28 +157,6 @@
 
         #rawResponseContainer { display:none; margin-top: 20px; }
         #rawResponseContainer pre { background-color: #212529; color: #f8f9fa; padding: 15px; border-radius: 6px; white-space: pre-wrap; word-wrap: break-word; max-height: 400px; overflow-y: auto; font-size: 13px; }
-
-        /* --- 手机端响应式布局 --- */
-        @media (max-width: 600px) {
-            .merchant-item {
-                flex-direction: column; /* 垂直堆叠 */
-                align-items: flex-start; /* 左对齐 */
-            }
-            .action-buttons {
-                width: 100%; /* 按钮容器占满宽度 */
-            }
-            .action-buttons .btn {
-                flex-grow: 1; /* 按钮平均分配宽度 */
-            }
-            .merchant-info h3 {
-                font-size: 15px;
-            }
-        }
-        @media (max-width: 480px) {
-            body { padding: 10px; }
-            .card { padding: 20px; }
-            #loginContainer { margin-top: 5vh; }
-        }
     </style>
 </head>
 <body>
@@ -217,7 +193,7 @@
             </div>
             <div class="card">
                 <div class="form-group">
-                    <label>Token (可粘贴完整Cookie)</label>
+                    <label>Token</label>
                     <div class="token-input-wrapper">
                         <div class="form-control">
                             <input type="text" id="tokenInput" placeholder="在此处粘贴" required>
@@ -260,7 +236,7 @@
         </div>
     </div>
     
-    <div id="qrModal" class="modal"><div class="modal-content"><span class="close-btn">&times;</span><p>请使用美団App扫描二维码</p><img id="qrCodeImg" src="" alt="QR Code" style="max-width: 100%; height: auto;"></div></div>
+    <div id="qrModal" class="modal"><div class="modal-content"><span class="close-btn">&times;</span><p>请使用美团app扫码</p><img id="qrCodeImg" src="" alt="QR Code" style="max-width: 100%; height: auto;"></div></div>
     
     <div id="confirmModal" class="modal">
         <div class="modal-content">
