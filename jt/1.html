@@ -12,7 +12,8 @@
             --primary-color: #007AFF; --primary-hover: #0056b3;
             --secondary-color: #6c757d; --secondary-hover: #5a6268;
             --success-color: #198754; --success-hover: #157347;
-            --danger-color: #dc3545; --light-gray: #f8f9fa;
+            --danger-color: #dc3545; --danger-hover: #bb2d3b;
+            --light-gray: #f8f9fa;
             --border-color: #e9ecef; --text-color: #212529;
             --text-muted: #6c757d; --card-shadow: 0 8px 32px rgba(0,0,0,0.1);
             --border-radius: 16px;
@@ -85,7 +86,10 @@
         
         .token-input-wrapper { display: flex; align-items: center; gap: 10px; }
         .token-input-wrapper .form-control { flex-grow: 1; margin: 0; }
-        #pasteTokenButton { background: var(--primary-color); flex-shrink: 0; padding: 8px 14px; font-size: 13px; }
+        #pasteTokenButton, #clearTokenButton { flex-shrink: 0; padding: 8px 14px; font-size: 13px; }
+        #pasteTokenButton { background: var(--primary-color); }
+        #clearTokenButton { background: var(--danger-color); }
+        #clearTokenButton:hover { background: var(--danger-hover); }
         
         .control-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
         .control-row:last-child { border-bottom: none; }
@@ -150,7 +154,7 @@
         .modal-content { background-color: #fff; padding: 25px; width: 90%; max-width: 320px; text-align: center; border-radius: var(--border-radius); position: relative; transform: scale(0.95); transition: transform 0.3s ease; }
         .modal.show .modal-content { transform: scale(1); }
         .close-btn { position: absolute; top: 10px; right: 15px; color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
-        .modal-buttons { display: flex; gap: 10px; }
+        .modal-buttons { display: flex; gap: 10px; justify-content: center; }
         .modal-buttons .btn { flex-grow: 1; }
         #confirmLogoutBtn, #confirmDebugBtn { background-color: var(--danger-color); }
         #cancelLogoutBtn, #cancelDebugBtn { background-color: var(--secondary-color); }
@@ -201,6 +205,8 @@
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path></svg>
                         </div>
                         <button id="pasteTokenButton" class="btn">粘贴</button>
+                        <!-- 新增: 清空按钮 -->
+                        <button id="clearTokenButton" class="btn">清空</button>
                     </div>
                 </div>
                 <div class="control-row"><label>自定义经纬度</label><label class="switch"><input type="checkbox" id="customCoordsToggle"><span class="slider"></span></label></div>
@@ -257,6 +263,17 @@
             </div>
             <div class="modal-buttons">
                 <button id="cancelDebugBtn" class="btn">取消</button><button id="confirmDebugBtn" class="btn">确认</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 新增: 自定义弹框, 用于粘贴失败等提示 -->
+    <div id="alertModal" class="modal">
+        <div class="modal-content">
+            <h3>提示</h3>
+            <p id="alertModalMessage"></p>
+            <div class="modal-buttons">
+                <button id="closeAlertBtn" class="btn" style="background-color: var(--primary-color);">好的</button>
             </div>
         </div>
     </div>
