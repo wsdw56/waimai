@@ -205,7 +205,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const adData = JSON.parse(JSON.parse(item.string_data).ad_data);
                 const { poi_name: name = '未知商家', distance = '未知距离', scheme } = adData;
                 if (!scheme) return;
-                // --- 修改开始: 为按钮添加了对应的颜色类 ---
                 merchantListDiv.insertAdjacentHTML('beforeend', `
                     <div class="merchant-item">
                         <div class="merchant-info">
@@ -218,7 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             <button class="btn qr-code-btn" data-scheme="${scheme}">扫码直达</button>
                         </div>
                     </div>`);
-                // --- 修改结束 ---
             } catch (e) { console.error("解析商家数据失败:", e); }
         });
         updateStatus(`已显示第 ${pageIndex + 1} 页的数据。`, "success");
