@@ -48,7 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
             loginError.style.opacity = 1;
         }
     }
-    const handleLogout = () => { localStorage.removeItem('isLoggedIn_jttt'); location.reload(); };
+    const handleLogout = () => {
+        if (confirm('您确定要退出登录吗？')) {
+            localStorage.removeItem('isLoggedIn_jttt');
+            location.reload();
+        }
+    };
 
     if (localStorage.getItem('isLoggedIn_jttt') === 'true') {
         loginContainer.style.display = 'none';
