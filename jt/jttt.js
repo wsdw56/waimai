@@ -255,3 +255,89 @@ document.addEventListener('DOMContentLoaded', () => {
     queryButton.addEventListener('click', async () => {
         if (!tokenInput.value.trim()) {
             alert('错误：请输入您的Token后再进行查询！');
+            updateStatus("错误：Token不能为空。", "error"); return;
+        }
+        currentPageNum = 0; pageCache = [];
+        merchantListDiv.innerHTML = ''; paginationControls.innerHTML = '';
+        locationDisplay.textContent = '';
+        queryButton.disabled = true;
+        try {
+            let lat, lon;
+            if (customCoordsToggle.checked) {
+                lat = parseFloat(latitudeInput.value); lon = parseFloat(longitudeInput.value);
+                if (isNaN(lat) || isNaN(lon)) throw new Error("自定义经纬度格式不正确。");
+                updateStatus(`使用自定义位置: ${lat}, ${lon}`, "info");
+            } else {
+                updateStatus("正在请求地理位置权限...", "info");
+                const pos = await getUserLocation();
+                lat = pos.coords.latitude; lon = pos.coords.longitude;
+                updateStatus(`位置获取成功: ${lat.toFixed(4)}, ${lon.toFixed(4)}`, "success");
+            }
+            [userLatitude, userLongitude] = [Math.round(lat * 1e6), Math.round(lon * 1e6)];
+            fetchAndCachePage(0);
+            fetchAddress(lat, lon);
+
+        } catch (error) {
+            let msg = error.message || "发生未知错误。";
+            if (error.code === 1) msg = "获取地理位置失败，您拒绝了请求。";
+            updateStatus(msg, "error");
+            alert(msg);
+            queryButton.disabled = false;
+        }
+    });
+
+    nextButton.addEventListener('click', () => fetchAndCachePage(currentPageNum + 1));
+    prevButton.addEventListener('click', () => { if (currentPageNum > 0) displayPage(currentPageNum - 1); });
+    
+    qrCloseBtn.onclick = () => closeModal(qrModal);
+    confirmLogoutBtn.onclick = performLogout;
+    cancelLogoutBtn.onclick = () => closeModal(confirmModal);
+    
+    confirmDebugBtn.addEventListener('click', () => {
+        if(debugPasswordInput.value === DEBUG_PASSWORD) {
+            debugModeEnabled = true;
+            alert('调试模式已开启！');
+            debugUnlockButton.innerHTML = '&#128275; 解锁';
+            debugUnlockButton.style.backgroundColor = 'var(--success-color)';
+            if(pageCache.length > 0) displayPage(currentPageNum);
+        } else {
+            alert('密码错误！');
+        }
+        closeModal(debugPasswordModal);
+    });
+    cancelDebugBtn.addEventListener('click', () => closeModal(debugPasswordModal));
+
+    window.onclick = (event) => { 
+        if (event.target == qrModal) closeModal(qrModal);
+        if (event.target == confirmModal) closeModal(confirmModal);
+        if (event.target == debugPasswordModal) closeModal(debugPasswordModal);
+    };
+
+    merchantListDiv.addEventListener('click', (e) => {
+        const target = e.target.closest('.btn');
+        if (!target) return;
+        const scheme = target.dataset.scheme;
+        if (target.classList.contains('copy-link-btn')) {
+            navigator.clipboard.writeText(scheme).then(() => {
+                const icon = target.querySelector('svg');
+                target.innerHTML = '已复制';
+                setTimeout(() => { target.innerHTML = ''; target.appendChild(icon); }, 2000);
+            });
+        } else if (target.classList.contains('qr-code-btn')) {
+            openModal(qrModal);
+            qrCodeImg.src = `https://api.2dcode.biz/v1/create-qr-code?data=${encodeURIComponent(scheme)}`;
+        }
+    });
+
+    debugUnlockButton.addEventListener('click', () => {
+        if (debugModeEnabled) {
+            debugModeEnabled = false;
+            debugUnlockButton.innerHTML = '&#128274; 上锁';
+            debugUnlockButton.style.backgroundColor = 'var(--secondary-color)';
+            rawResponseContainer.style.display = 'none';
+        } else {
+            openModal(debugPasswordModal);
+            debugPasswordInput.focus();
+        }
+    });
+});
