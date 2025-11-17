@@ -93,6 +93,9 @@
         
         .token-input-wrapper { display: flex; align-items: center; gap: 10px; }
         .token-input-wrapper .form-control { flex-grow: 1; margin: 0; }
+        .token-input-wrapper .form-control input { padding: 12px 12px 12px 45px; }
+        .token-input-wrapper .form-control label { display: none; } 
+
         #pasteTokenButton {
             background: var(--primary-color); color: white; border: none;
             border-radius: 6px; padding: 8px 14px; font-size: 13px; cursor: pointer; flex-shrink: 0;
@@ -138,6 +141,8 @@
         .status-info { background-color: #cff4fc; color: #055160; }
         .status-success { background-color: #d1e7dd; color: #0f5132; }
         .status-error { background-color: #f8d7da; color: #842029; }
+        
+        #locationDisplay { text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 10px; min-height: 18px; transition: opacity 0.3s; }
 
         .page-header { padding-bottom: 10px; border-bottom: 1px solid var(--border-color); margin-bottom: 10px; font-weight: 700; font-size: 18px; }
         
@@ -151,7 +156,7 @@
         .action-buttons .btn { 
             font-size: 12px; padding: 6px 12px; border-radius: 20px; 
             display: flex; align-items: center; justify-content: center; gap: 5px;
-            flex-grow: 1; min-width: 80px;
+            flex-grow: 1; min-width: 80px; text-decoration: none;
         }
         .action-buttons .btn svg { width: 14px; height: 14px; }
         .btn:hover { filter: brightness(1.1); }
@@ -173,10 +178,6 @@
         .modal.show .modal-content { transform: scale(1); }
         .close-btn { position: absolute; top: 10px; right: 15px; color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
         
-        #rawResponseContainer { display:none; margin-top: 20px; }
-        #rawResponseContainer pre { background-color: #212529; color: #f8f9fa; padding: 15px; border-radius: 6px; white-space: pre-wrap; word-wrap: break-word; max-height: 400px; overflow-y: auto; font-size: 13px; }
-
-        /* --- 自定义确认模态框 --- */
         #confirmModal .modal-content { padding: 30px; }
         #confirmModal h3 { margin: 0 0 10px 0; font-size: 20px; }
         #confirmModal p { margin: 0 0 25px 0; color: var(--text-muted); }
@@ -184,6 +185,9 @@
         .confirm-buttons .btn { flex-grow: 1; }
         #confirmLogoutBtn { background-color: var(--danger-color); }
         #cancelLogoutBtn { background-color: var(--secondary-color); }
+
+        #rawResponseContainer { display:none; margin-top: 20px; }
+        #rawResponseContainer pre { background-color: #212529; color: #f8f9fa; padding: 15px; border-radius: 6px; white-space: pre-wrap; word-wrap: break-word; max-height: 400px; overflow-y: auto; font-size: 13px; }
 
         @media (min-width: 480px) { .action-buttons { flex-wrap: nowrap; } .action-buttons .btn { flex-grow: 0; } }
         @media (max-width: 480px) {
@@ -234,7 +238,7 @@
                     <label>Token (可粘贴完整Cookie)</label>
                     <div class="token-input-wrapper">
                         <div class="form-control">
-                            <input type="text" id="tokenInput" placeholder="在此处粘贴" required>
+                            <input type="text" id="tokenInput" placeholder="在此处粘贴Token或Cookie" required>
                             <div class="line"></div>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path></svg>
                         </div>
@@ -262,6 +266,7 @@
                 </div>
                 <div id="paginationControls" class="pagination"></div>
                 <div id="status" class="status-info">状态：准备就绪</div>
+                <div id="locationDisplay"></div>
             </div>
             <div class="card" id="results">
                 <div class="page-header" id="responseHeader">商家列表</div>
@@ -273,14 +278,11 @@
     
     <div id="qrModal" class="modal"><div class="modal-content"><span class="close-btn">&times;</span><p>请使用美団App扫描二维码</p><img id="qrCodeImg" src="" alt="QR Code"></div></div>
     
-    <!-- **** 新增的确认模态框 **** -->
     <div id="confirmModal" class="modal">
         <div class="modal-content">
-            <h3>确认退出</h3>
-            <p>您确定要退出登录吗？</p>
+            <h3>确认退出</h3><p>您确定要退出登录吗？</p>
             <div class="confirm-buttons">
-                <button id="cancelLogoutBtn" class="btn">取消</button>
-                <button id="confirmLogoutBtn" class="btn">确认退出</button>
+                <button id="cancelLogoutBtn" class="btn">取消</button><button id="confirmLogoutBtn" class="btn">确认退出</button>
             </div>
         </div>
     </div>
