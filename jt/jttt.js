@@ -73,17 +73,30 @@ document.addEventListener('DOMContentLoaded', () => {
         navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 });
     });
     
+    // --- 修改开始: 恢复为使用OpenStreetMap Nominatim进行地址解析 ---
     async function fetchAddress(lat, lon) {
         try {
-            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=zh`);
-            if (!response.ok) throw new Error('Reverse geocoding request failed');
+            // 使用jsonv2格式获取更结构化的数据，并请求简体中文
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&accept-language=zh-CN`);
+            if (!response.ok) {
+                 // 网络或服务器错误时，静默处理
+                 console.error("Nominatim API request failed with status:", response.status);
+                 return;
+            }
             const data = await response.json();
-            locationDisplay.textContent = `📍 当前位置: ${data.display_name || '无法解析具体地址'}`;
+            // 仅在成功获取到 display_name 字段时显示地址
+            if (data && data.display_name) {
+                locationDisplay.textContent = `📍 当前位置: ${data.display_name}`;
+            } else {
+                // API返回成功但没有地址信息时，静默处理
+                console.warn("Nominatim API response did not contain a display_name.");
+            }
         } catch (error) {
-            console.error("地址解析失败:", error);
-            locationDisplay.textContent = `📍 地址解析失败`;
+            // 捕获任何其他异常（如网络中断），同样静默处理
+            console.error("地址解析请求失败:", error);
         }
     }
+    // --- 修改结束 ---
 
     async function fetchData(pageNum, wmContext, token) {
         updateStatus(`正在请求第 ${pageNum + 1} 页...`, "info");
@@ -278,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             [userLatitude, userLongitude] = [Math.round(lat * 1e6), Math.round(lon * 1e6)];
             fetchAndCachePage(0);
-            fetchAddress(lat, lon);
+            fetchAddress(lat, lon); 
 
         } catch (error) {
             let msg = error.message || "发生未知错误。";
