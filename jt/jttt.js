@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- UI 更新函数 ---
     const updateStatus = (message, type = 'info') => {
         statusDiv.textContent = `状态：${message}`;
-        statusDiv.className = `status-${type}`;
+        statusDiv.className = `status status-${type}`;
     };
     
     function setButtonsState(loading) {
@@ -166,8 +166,9 @@ document.addEventListener('DOMContentLoaded', () => {
             paginationControls.appendChild(btn);
         };
         const createEllipsis = () => paginationControls.insertAdjacentHTML('beforeend', '<span>...</span>');
-        if (total <= 7) for (let i = 1; i <= total; i++) createBtn(i);
-        else {
+        if (total <= 7) {
+            for (let i = 1; i <= total; i++) createBtn(i);
+        } else {
             createBtn(1);
             if (current > 4) createEllipsis();
             let start = Math.max(2, current - 2), end = Math.min(total - 1, current + 2);
@@ -198,26 +199,26 @@ document.addEventListener('DOMContentLoaded', () => {
             merchantListDiv.innerHTML = '<p style="text-align: center; color: var(--text-muted);">当前页没有商家信息。</p>';
             setButtonsState(false); return;
         }
-        
-        const logoIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
-        const linkIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path></svg>`;
-        const copyIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
-        const qrIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><line x1="14" y1="14" x2="14" y2="21"></line><line x1="21" y1="14" x2="21" y2="21"></line><line x1="14" y1="14" x2="21" y2="14"></line></svg>`;
 
         moduleList.forEach(item => {
             try {
                 const adData = JSON.parse(JSON.parse(item.string_data).ad_data);
                 const { poi_name: name = '未知商家', distance = '未知距离', scheme } = adData;
                 if (!scheme) return;
+                // --- 修改开始: 为按钮添加了对应的颜色类 ---
                 merchantListDiv.insertAdjacentHTML('beforeend', `
                     <div class="merchant-item">
-                        <div class="merchant-logo">${logoIcon}</div>
-                        <div class="merchant-info"><h3>${name}</h3><p>距离：${distance}</p></div>
+                        <div class="merchant-info">
+                            <h3>${name}</h3>
+                            <p>距离：${distance}</p>
+                        </div>
                         <div class="action-buttons">
-                            <a href="${scheme}" class="btn direct-link-btn" target="_blank" title="直达">${linkIcon}</a>
-                            <button class="btn copy-link-btn" data-scheme="${scheme}" title="复制链接">${copyIcon}</button>
-                            <button class="btn qr-code-btn" data-scheme="${scheme}" title="生成二维码">${qrIcon}</button>
-                        </div></div>`);
+                            <a href="${scheme}" class="btn direct-link-btn" target="_blank">直达链接</a>
+                            <button class="btn copy-link-btn" data-scheme="${scheme}">复制链接</button>
+                            <button class="btn qr-code-btn" data-scheme="${scheme}">扫码直达</button>
+                        </div>
+                    </div>`);
+                // --- 修改结束 ---
             } catch (e) { console.error("解析商家数据失败:", e); }
         });
         updateStatus(`已显示第 ${pageIndex + 1} 页的数据。`, "success");
@@ -253,24 +254,28 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     queryButton.addEventListener('click', async () => {
-        if (!tokenInput.value.trim()) {
+        const token = tokenInput.value.trim();
+        if (!token) {
             alert('错误：请输入您的Token后再进行查询！');
             updateStatus("错误：Token不能为空。", "error"); return;
         }
         currentPageNum = 0; pageCache = [];
-        merchantListDiv.innerHTML = ''; paginationControls.innerHTML = '';
+        merchantListDiv.innerHTML = '<p style="text-align: center; color: var(--text-muted);">正在准备查询...</p>';
+        paginationControls.innerHTML = '';
         locationDisplay.textContent = '';
         queryButton.disabled = true;
         try {
             let lat, lon;
             if (customCoordsToggle.checked) {
-                lat = parseFloat(latitudeInput.value); lon = parseFloat(longitudeInput.value);
+                lat = parseFloat(latitudeInput.value);
+                lon = parseFloat(longitudeInput.value);
                 if (isNaN(lat) || isNaN(lon)) throw new Error("自定义经纬度格式不正确。");
                 updateStatus(`使用自定义位置: ${lat}, ${lon}`, "info");
             } else {
                 updateStatus("正在请求地理位置权限...", "info");
                 const pos = await getUserLocation();
-                lat = pos.coords.latitude; lon = pos.coords.longitude;
+                lat = pos.coords.latitude;
+                lon = pos.coords.longitude;
                 updateStatus(`位置获取成功: ${lat.toFixed(4)}, ${lon.toFixed(4)}`, "success");
             }
             [userLatitude, userLongitude] = [Math.round(lat * 1e6), Math.round(lon * 1e6)];
@@ -289,9 +294,8 @@ document.addEventListener('DOMContentLoaded', () => {
     nextButton.addEventListener('click', () => fetchAndCachePage(currentPageNum + 1));
     prevButton.addEventListener('click', () => { if (currentPageNum > 0) displayPage(currentPageNum - 1); });
     
-    qrCloseBtn.onclick = () => closeModal(qrModal);
+    [qrCloseBtn, cancelLogoutBtn, cancelDebugBtn].forEach(btn => btn.onclick = () => closeModal(btn.closest('.modal')));
     confirmLogoutBtn.onclick = performLogout;
-    cancelLogoutBtn.onclick = () => closeModal(confirmModal);
     
     confirmDebugBtn.addEventListener('click', () => {
         if(debugPasswordInput.value === DEBUG_PASSWORD) {
@@ -305,12 +309,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         closeModal(debugPasswordModal);
     });
-    cancelDebugBtn.addEventListener('click', () => closeModal(debugPasswordModal));
 
     window.onclick = (event) => { 
-        if (event.target == qrModal) closeModal(qrModal);
-        if (event.target == confirmModal) closeModal(confirmModal);
-        if (event.target == debugPasswordModal) closeModal(debugPasswordModal);
+        if (event.target.classList.contains('modal')) closeModal(event.target);
     };
 
     merchantListDiv.addEventListener('click', (e) => {
@@ -319,13 +320,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const scheme = target.dataset.scheme;
         if (target.classList.contains('copy-link-btn')) {
             navigator.clipboard.writeText(scheme).then(() => {
-                const icon = target.querySelector('svg');
-                target.innerHTML = '已复制';
-                setTimeout(() => { target.innerHTML = ''; target.appendChild(icon); }, 2000);
+                const originalText = target.textContent;
+                target.textContent = '已复制!';
+                target.disabled = true;
+                setTimeout(() => { 
+                    target.textContent = originalText;
+                    target.disabled = false;
+                }, 2000);
             });
         } else if (target.classList.contains('qr-code-btn')) {
+            qrCodeImg.src = `https://api.2dcode.biz/v1/create-qr-code?data=${encodeURIComponent(scheme)}&size=256`;
             openModal(qrModal);
-            qrCodeImg.src = `https://api.2dcode.biz/v1/create-qr-code?data=${encodeURIComponent(scheme)}`;
         }
     });
 
