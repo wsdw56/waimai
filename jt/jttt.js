@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const prevButton = document.getElementById('prevButton');
     const tokenInput = document.getElementById('tokenInput');
     const statusDiv = document.getElementById('status');
+    const locationDisplay = document.getElementById('locationDisplay');
     const merchantListDiv = document.getElementById('merchantList');
     const paginationControls = document.getElementById('paginationControls');
     
@@ -66,6 +67,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!navigator.geolocation) return reject({ message: "您的浏览器不支持地理定位。" });
         navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 });
     });
+    
+    async function fetchAddress(lat, lon) {
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=zh`);
+            if (!response.ok) throw new Error('Reverse geocoding request failed');
+            const data = await response.json();
+            return data.display_name || '无法解析具体地址';
+        } catch (error) {
+            console.error("地址解析失败:", error);
+            return '无法解析具体地址';
+        }
+    }
 
     async function fetchData(pageNum, wmContext, token) {
         updateStatus(`正在请求第 ${pageNum + 1} 页...`, "info");
@@ -238,19 +251,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         currentPageNum = 0; pageCache = [];
         merchantListDiv.innerHTML = ''; paginationControls.innerHTML = '';
+        locationDisplay.textContent = '';
         queryButton.disabled = true;
         try {
+            let lat, lon;
             if (customCoordsToggle.checked) {
-                const lat = parseFloat(latitudeInput.value), lon = parseFloat(longitudeInput.value);
+                lat = parseFloat(latitudeInput.value); lon = parseFloat(longitudeInput.value);
                 if (isNaN(lat) || isNaN(lon)) throw new Error("自定义经纬度格式不正确。");
                 [userLatitude, userLongitude] = [Math.round(lat * 1e6), Math.round(lon * 1e6)];
                 updateStatus(`使用自定义位置: ${lat}, ${lon}`, "info");
             } else {
                 updateStatus("正在请求地理位置权限...", "info");
                 const pos = await getUserLocation();
-                [userLatitude, userLongitude] = [Math.round(pos.coords.latitude * 1e6), Math.round(pos.coords.longitude * 1e6)];
-                updateStatus(`位置获取成功: ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`, "success");
+                lat = pos.coords.latitude; lon = pos.coords.longitude;
+                [userLatitude, userLongitude] = [Math.round(lat * 1e6), Math.round(lon * 1e6)];
+                updateStatus(`位置获取成功: ${lat.toFixed(4)}, ${lon.toFixed(4)}`, "success");
             }
+            locationDisplay.textContent = "正在解析地理位置...";
+            const address = await fetchAddress(lat, lon);
+            locationDisplay.textContent = `📍 当前位置: ${address}`;
             await fetchAndCachePage(0);
         } catch (error) {
             let msg = error.message || "发生未知错误。";
