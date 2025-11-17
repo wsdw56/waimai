@@ -40,7 +40,6 @@
             color: white; padding: 18px; border-radius: 50%;
             margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
         }
-        .login-header .icon svg { width: 36px; height: 36px; display: block; }
         #loginContainer h1 { font-size: 26px; font-weight: 700; margin: 0; }
         
         .form-control { position: relative; margin-bottom: 25px; }
@@ -61,19 +60,16 @@
             background: var(--primary-color); transform: scaleX(0); transition: transform 0.3s ease;
         }
         .form-control input:focus ~ .line { transform: scaleX(1); }
-        .form-control svg {
-            position: absolute; left: 12px; top: 12px; width: 20px; height: 20px;
-            color: var(--text-muted); transition: color 0.3s ease;
-        }
+        .form-control svg { position: absolute; left: 12px; top: 12px; width: 20px; height: 20px; color: var(--text-muted); }
         .form-control input:focus ~ svg { color: var(--primary-color); }
         
-        #loginError { color: var(--danger-color); text-align: center; margin-top: 15px; height: 20px; font-size: 14px; transition: opacity 0.3s; opacity: 0; }
-        .remember-me { display: flex; align-items: center; margin: 20px 0; color: var(--text-muted); font-size: 15px; }
-        .remember-me input { margin-right: 10px; width: 16px; height: 16px; }
+        #loginError { color: var(--danger-color); text-align: center; margin-top: 15px; height: 20px; font-size: 14px; opacity: 0; }
+        .remember-me { display: flex; align-items: center; margin: 20px 0; font-size: 15px; }
+        .remember-me input { margin-right: 10px; }
         
         .btn { padding: 12px; font-size: 16px; color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s ease-out; font-weight: 500; text-align: center; }
         .btn:active { transform: translateY(1px); }
-        a.btn { text-decoration: none; } /* 去除a标签按钮的下划线 */
+        a.btn { text-decoration: none; }
         
         #loginButton, #queryButton { 
             width: 100%; background: linear-gradient(90deg, var(--primary-color), #00A6FF);
@@ -83,21 +79,13 @@
 
         #appContainer { display: none; }
         .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .app-title {
-            display: inline-flex; align-items: center; gap: 10px;
-            background-color: #e7f3ff; color: var(--primary-color);
-            padding: 8px 16px; border-radius: 30px; font-weight: 700; font-size: 18px;
-        }
-        .app-title svg { width: 22px; height: 22px; }
-        #logoutButton {
-            background: none; border: none; cursor: pointer; padding: 5px; display: flex; align-items: center; color: var(--text-muted);
-        }
+        .app-title { display: inline-flex; align-items: center; gap: 10px; background-color: #e7f3ff; color: var(--primary-color); padding: 8px 16px; border-radius: 30px; font-weight: 700; font-size: 18px; }
+        #logoutButton { background: none; border: none; cursor: pointer; display: flex; align-items: center; color: var(--text-muted); }
         #logoutButton:hover { color: var(--danger-color); }
         
         .token-input-wrapper { display: flex; align-items: center; gap: 10px; }
         .token-input-wrapper .form-control { flex-grow: 1; margin: 0; }
-        .token-input-wrapper .form-control input { padding: 12px 12px 12px 45px; }
-        #pasteTokenButton { background: var(--primary-color); color: white; border: none; border-radius: 6px; padding: 8px 14px; font-size: 13px; cursor: pointer; flex-shrink: 0; }
+        #pasteTokenButton { background: var(--primary-color); flex-shrink: 0; padding: 8px 14px; font-size: 13px; }
         
         .control-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
         .control-row:last-child { border-bottom: none; }
@@ -110,68 +98,58 @@
 
         #customCoordsContainer { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s ease-out; }
         #customCoordsContainer.active { grid-template-rows: 1fr; }
-        .custom-coords-inner {
-            overflow: hidden; margin-top: 15px; transition: all 0.4s ease-out;
-        }
-        #customCoordsContainer.active .custom-coords-inner {
-            background-color: #f0f7ff; border-left: 3px solid var(--primary-color);
-            padding: 15px 15px 0 15px; border-radius: 8px;
-        }
+        .custom-coords-inner { overflow: hidden; margin-top: 15px; transition: all 0.4s ease-out; }
+        #customCoordsContainer.active .custom-coords-inner { background-color: #f0f7ff; border-left: 3px solid var(--primary-color); padding: 15px 15px 0 15px; border-radius: 8px; }
         
         #queryButton { font-size: 18px; }
-
         #status { font-weight: 500; text-align: center; padding: 12px; border-radius: 6px; transition: all 0.3s; margin-top: 20px; }
         .status-info { background-color: #cff4fc; color: #055160; }
         .status-success { background-color: #d1e7dd; color: #0f5132; }
         .status-error { background-color: #f8d7da; color: #842029; }
-        #locationDisplay { text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 10px; min-height: 18px; transition: opacity 0.3s; }
+        #locationDisplay { text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 10px; min-height: 18px; }
 
         .page-header { padding-bottom: 10px; border-bottom: 1px solid var(--border-color); margin-bottom: 15px; font-weight: 700; font-size: 18px; }
         
         #merchantList { max-height: 65vh; overflow-y: auto; padding-right: 10px; }
+        
+        /* --- 全新紧凑布局 --- */
         .merchant-item { 
-            background: white; border-radius: 12px; padding: 15px 20px; margin-bottom: 15px; 
+            background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.2s ease-out; 
-            display: flex; flex-direction: column; gap: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
         }
         .merchant-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         
-        .merchant-info h3 { margin: 0 0 4px 0; font-size: 17px; font-weight: 700; }
-        .merchant-info p { margin: 0; font-size: 14px; color: var(--text-muted); }
+        .merchant-info { flex-grow: 1; min-width: 0; /* 防止flex项目溢出 */ }
+        .merchant-info h3 { margin: 0 0 4px 0; font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .merchant-info p { margin: 0; font-size: 13px; color: var(--text-muted); }
         
-        .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+        .action-buttons { display: flex; gap: 8px; flex-shrink: 0; }
         .action-buttons .btn { 
-            font-size: 14px; font-weight: 500; padding: 8px 12px;
-            border-radius: 6px; flex-grow: 1; min-width: 100px;
+            font-size: 13px; font-weight: 500; padding: 6px 12px;
+            border-radius: 6px;
         }
-
         .action-buttons .direct-link-btn { background-color: var(--primary-color); }
         .action-buttons .direct-link-btn:hover { background-color: var(--primary-hover); }
-        
         .action-buttons .copy-link-btn { background-color: var(--success-color); }
         .action-buttons .copy-link-btn:hover { background-color: var(--success-hover); }
-        
         .action-buttons .qr-code-btn { background-color: var(--secondary-color); }
         .action-buttons .qr-code-btn:hover { background-color: var(--secondary-hover); }
-        
+
         .results-footer { margin-top: 20px; display: flex; justify-content: space-between; align-items: center; }
         .results-footer .btn { padding: 8px; font-size: 14px; background: white; color: var(--text-color); border: 1px solid var(--border-color); width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; }
         .results-footer .btn:disabled { background: var(--light-gray); color: #ccc; cursor: not-allowed; }
         .pagination { flex-grow: 1; text-align: center; }
-        .pagination button, .pagination span {
-            background-color: #fff; border: 1px solid var(--border-color); color: var(--primary-color);
-            padding: 6px 12px; margin: 0 3px; cursor: pointer; border-radius: 4px;
-        }
+        .pagination button { background-color: #fff; border: 1px solid var(--border-color); color: var(--primary-color); padding: 6px 12px; margin: 0 3px; cursor: pointer; border-radius: 4px; }
         .pagination button:hover { background-color: #e9ecef; }
         .pagination button.active { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
         
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
+        .modal { display: none; position: fixed; z-index: 1000; inset: 0; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
         .modal.show { opacity: 1; }
-        .modal-content { 
-            background-color: #fff; padding: 25px; width: 90%; max-width: 320px; text-align: center; 
-            border-radius: var(--border-radius); position: relative;
-            transform: scale(0.95); transition: transform 0.3s ease;
-        }
+        .modal-content { background-color: #fff; padding: 25px; width: 90%; max-width: 320px; text-align: center; border-radius: var(--border-radius); position: relative; transform: scale(0.95); transition: transform 0.3s ease; }
         .modal.show .modal-content { transform: scale(1); }
         .close-btn { position: absolute; top: 10px; right: 15px; color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
         .modal-buttons { display: flex; gap: 10px; }
@@ -182,12 +160,26 @@
         #rawResponseContainer { display:none; margin-top: 20px; }
         #rawResponseContainer pre { background-color: #212529; color: #f8f9fa; padding: 15px; border-radius: 6px; white-space: pre-wrap; word-wrap: break-word; max-height: 400px; overflow-y: auto; font-size: 13px; }
 
+        /* --- 手机端响应式布局 --- */
+        @media (max-width: 600px) {
+            .merchant-item {
+                flex-direction: column; /* 垂直堆叠 */
+                align-items: flex-start; /* 左对齐 */
+            }
+            .action-buttons {
+                width: 100%; /* 按钮容器占满宽度 */
+            }
+            .action-buttons .btn {
+                flex-grow: 1; /* 按钮平均分配宽度 */
+            }
+            .merchant-info h3 {
+                font-size: 15px;
+            }
+        }
         @media (max-width: 480px) {
             body { padding: 10px; }
             .card { padding: 20px; }
             #loginContainer { margin-top: 5vh; }
-            .merchant-info h3 { font-size: 16px; }
-            .action-buttons { flex-direction: column; } /* 小屏幕上按钮垂直排列，更美观 */
         }
     </style>
 </head>
@@ -196,7 +188,7 @@
         <!-- 登录界面 -->
         <div id="loginContainer" class="card">
             <div class="login-header">
-                <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
+                <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
                 <h1>登录</h1>
             </div>
             <div class="form-control">
@@ -218,10 +210,10 @@
         <div id="appContainer">
             <div class="app-header">
                 <div class="app-title">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1.5a.7.7 0 0 1 .7.7v1.17a.2.2 0 0 0 .15.19l.7.17a.7.7 0 0 1 .6.85l-.23.89a.2.2 0 0 0 .09.21l.55.55a.7.7 0 0 1 0 .99l-.55.55a.2.2 0 0 0-.09.21l.23.89a.7.7 0 0 1-.6.85l-.7.17a.2.2 0 0 0-.15.19V21.3a.7.7 0 0 1-1.4 0v-1.17a.2.2 0 0 0-.15-.19l-.7-.17a.7.7 0 0 1-.6-.85l.23-.89a.2.2 0 0 0-.09-.21l-.55-.55a.7.7 0 0 1 0-.99l.55-.55a.2.2 0 0 0 .09-.21l-.23-.89a.7.7 0 0 1 .6-.85l.7-.17a.2.2 0 0 0 .15-.19V2.2a.7.7 0 0 1 .7-.7z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1.5a.7.7 0 0 1 .7.7v1.17a.2.2 0 0 0 .15.19l.7.17a.7.7 0 0 1 .6.85l-.23.89a.2.2 0 0 0 .09.21l.55.55a.7.7 0 0 1 0 .99l-.55.55a.2.2 0 0 0-.09.21l.23.89a.7.7 0 0 1-.6.85l-.7.17a.2.2 0 0 0-.15.19V21.3a.7.7 0 0 1-1.4 0v-1.17a.2.2 0 0 0-.15-.19l-.7-.17a.7.7 0 0 1-.6-.85l.23-.89a.2.2 0 0 0-.09-.21l-.55-.55a.7.7 0 0 1 0-.99l.55-.55a.2.2 0 0 0 .09-.21l-.23-.89a.7.7 0 0 1 .6-.85l.7-.17a.2.2 0 0 0 .15-.19V2.2a.7.7 0 0 1 .7-.7z"></path></svg>
                     <span>Lemon兔单终极版</span>
                 </div>
-                <button id="logoutButton" title="退出登录"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg><span>退出</span></button>
+                <button id="logoutButton" title="退出登录"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg><span>退出</span></button>
             </div>
             <div class="card">
                 <div class="form-group">
@@ -260,15 +252,15 @@
                 <div id="merchantList"><p style="text-align: center; color: var(--text-muted);">请点击“开始查询”按钮...</p></div>
                 <div id="rawResponseContainer"><h4 class="page-header">原始响应数据</h4><pre><code id="rawResponseOutput"></code></pre></div>
                 <div class="results-footer">
-                    <button id="prevButton" class="btn" disabled><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></button>
+                    <button id="prevButton" class="btn" disabled><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
                     <div id="paginationControls" class="pagination"></div>
-                    <button id="nextButton" class="btn" disabled><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></button>
+                    <button id="nextButton" class="btn" disabled><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
                 </div>
             </div>
         </div>
     </div>
     
-    <div id="qrModal" class="modal"><div class="modal-content"><span class="close-btn">&times;</span><p>请使用手机扫描二维码</p><img id="qrCodeImg" src="" alt="QR Code" style="max-width: 100%; height: auto;"></div></div>
+    <div id="qrModal" class="modal"><div class="modal-content"><span class="close-btn">&times;</span><p>请使用美団App扫描二维码</p><img id="qrCodeImg" src="" alt="QR Code" style="max-width: 100%; height: auto;"></div></div>
     
     <div id="confirmModal" class="modal">
         <div class="modal-content">
