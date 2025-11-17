@@ -22,9 +22,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusDiv = document.getElementById('status');
     const merchantListDiv = document.getElementById('merchantList');
     const paginationControls = document.getElementById('paginationControls');
+    
     const qrModal = document.getElementById('qrModal');
     const qrCodeImg = document.getElementById('qrCodeImg');
-    const closeBtn = document.querySelector('.close-btn');
+    const qrCloseBtn = qrModal.querySelector('.close-btn');
+    
+    const confirmModal = document.getElementById('confirmModal');
+    const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+    const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+
     const customCoordsToggle = document.getElementById('customCoordsToggle');
     const customCoordsContainer = document.getElementById('customCoordsContainer');
     const latitudeInput = document.getElementById('latitudeInput');
@@ -48,12 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loginError.style.opacity = 1;
         }
     }
-    const handleLogout = () => {
-        if (confirm('您确定要退出登录吗？')) {
-            localStorage.removeItem('isLoggedIn_jttt');
-            location.reload();
-        }
-    };
+    const performLogout = () => { localStorage.removeItem('isLoggedIn_jttt'); location.reload(); };
 
     if (localStorage.getItem('isLoggedIn_jttt') === 'true') {
         loginContainer.style.display = 'none';
@@ -203,13 +204,19 @@ document.addEventListener('DOMContentLoaded', () => {
         setButtonsState(false);
     }
 
-    const openModal = (qrUrl) => { qrCodeImg.src = qrUrl; qrModal.style.display = 'flex'; };
-    const closeModal = () => { qrModal.style.display = 'none'; qrCodeImg.src = ''; };
+    const openModal = (modal) => { modal.style.display = 'flex'; setTimeout(() => modal.classList.add('show'), 10); };
+    const closeModal = (modal) => {
+        modal.classList.remove('show');
+        setTimeout(() => { 
+            modal.style.display = 'none'; 
+            if(modal === qrModal) qrCodeImg.src = '';
+        }, 300);
+    };
     
     // --- 事件监听器 ---
     loginButton.addEventListener('click', handleLogin);
     passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
-    logoutButton.addEventListener('click', handleLogout);
+    logoutButton.addEventListener('click', () => openModal(confirmModal));
     
     customCoordsToggle.addEventListener('change', () => { customCoordsContainer.classList.toggle('active', customCoordsToggle.checked); });
     
@@ -257,8 +264,13 @@ document.addEventListener('DOMContentLoaded', () => {
     nextButton.addEventListener('click', () => fetchAndCachePage(currentPageNum + 1));
     prevButton.addEventListener('click', () => { if (currentPageNum > 0) displayPage(currentPageNum - 1); });
     
-    closeBtn.onclick = closeModal;
-    window.onclick = (event) => { if (event.target == qrModal) closeModal(); };
+    qrCloseBtn.onclick = () => closeModal(qrModal);
+    confirmLogoutBtn.onclick = performLogout;
+    cancelLogoutBtn.onclick = () => closeModal(confirmModal);
+    window.onclick = (event) => { 
+        if (event.target == qrModal) closeModal(qrModal);
+        if (event.target == confirmModal) closeModal(confirmModal);
+    };
 
     merchantListDiv.addEventListener('click', (e) => {
         const target = e.target.closest('.btn');
@@ -271,7 +283,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => { textSpan.textContent = '复制'; }, 2000);
             });
         } else if (target.classList.contains('qr-code-btn')) {
-            openModal(`https://api.2dcode.biz/v1/create-qr-code?data=${encodeURIComponent(scheme)}`);
+            openModal(qrModal);
+            qrCodeImg.src = `https://api.2dcode.biz/v1/create-qr-code?data=${encodeURIComponent(scheme)}`;
         }
     });
 
