@@ -86,9 +86,7 @@
         
         .token-input-wrapper { display: flex; align-items: center; gap: 10px; }
         .token-input-wrapper .form-control { flex-grow: 1; margin: 0; }
-        #pasteTokenButton, #clearTokenButton { flex-shrink: 0; padding: 8px 14px; font-size: 13px; }
-        #pasteTokenButton { background: var(--primary-color); }
-        #clearTokenButton { background: var(--danger-color); }
+        #clearTokenButton { flex-shrink: 0; padding: 8px 14px; font-size: 13px; background: var(--danger-color); }
         #clearTokenButton:hover { background: var(--danger-hover); }
         
         .control-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
@@ -204,8 +202,7 @@
                             <div class="line"></div>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path></svg>
                         </div>
-                        <button id="pasteTokenButton" class="btn">粘贴</button>
-                        <!-- 新增: 清空按钮 -->
+                        <!-- 修改: 移除粘贴按钮 -->
                         <button id="clearTokenButton" class="btn">清空</button>
                     </div>
                 </div>
@@ -267,7 +264,6 @@
         </div>
     </div>
     
-    <!-- 新增: 自定义弹框, 用于粘贴失败等提示 -->
     <div id="alertModal" class="modal">
         <div class="modal-content">
             <h3>提示</h3>
