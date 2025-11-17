@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginError = document.getElementById('loginError');
     const logoutButton = document.getElementById('logoutButton');
     const pasteTokenButton = document.getElementById('pasteTokenButton');
+    const clearTokenButton = document.getElementById('clearTokenButton');
     const queryButton = document.getElementById('queryButton');
     const nextButton = document.getElementById('nextButton');
     const prevButton = document.getElementById('prevButton');
@@ -25,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const paginationControls = document.getElementById('paginationControls');
     
     const qrModal = document.getElementById('qrModal');
-    const qrCodeImg = document.getElementById('qrCodeImg');
     const qrCloseBtn = qrModal.querySelector('.close-btn');
     
     const confirmModal = document.getElementById('confirmModal');
@@ -37,6 +37,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmDebugBtn = document.getElementById('confirmDebugBtn');
     const cancelDebugBtn = document.getElementById('cancelDebugBtn');
 
+    const alertModal = document.getElementById('alertModal');
+    const alertModalMessage = document.getElementById('alertModalMessage');
+    const closeAlertBtn = document.getElementById('closeAlertBtn');
+
     const customCoordsToggle = document.getElementById('customCoordsToggle');
     const customCoordsContainer = document.getElementById('customCoordsContainer');
     const latitudeInput = document.getElementById('latitudeInput');
@@ -47,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 应用状态 ---
     let currentPageNum = 0, pageCache = [], isFetching = false, userLatitude = null, userLongitude = null, debugModeEnabled = false;
+    let parsedTokenCache = ''; // 新增: 用于在后台缓存解析好的Token
 
     // --- 登录/登出逻辑 ---
     function handleLogin() {
@@ -73,30 +78,23 @@ document.addEventListener('DOMContentLoaded', () => {
         navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 });
     });
     
-    // --- 修改开始: 恢复为使用OpenStreetMap Nominatim进行地址解析 ---
     async function fetchAddress(lat, lon) {
         try {
-            // 使用jsonv2格式获取更结构化的数据，并请求简体中文
             const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&accept-language=zh-CN`);
             if (!response.ok) {
-                 // 网络或服务器错误时，静默处理
                  console.error("Nominatim API request failed with status:", response.status);
                  return;
             }
             const data = await response.json();
-            // 仅在成功获取到 display_name 字段时显示地址
             if (data && data.display_name) {
                 locationDisplay.textContent = `📍 当前位置: ${data.display_name}`;
             } else {
-                // API返回成功但没有地址信息时，静默处理
                 console.warn("Nominatim API response did not contain a display_name.");
             }
         } catch (error) {
-            // 捕获任何其他异常（如网络中断），同样静默处理
             console.error("地址解析请求失败:", error);
         }
     }
-    // --- 修改结束 ---
 
     async function fetchData(pageNum, wmContext, token) {
         updateStatus(`正在请求第 ${pageNum + 1} 页...`, "info");
@@ -127,12 +125,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     async function fetchAndCachePage(pageIndex) {
-        if (pageCache[pageIndex]) return displayPage(pageIndex);
         if (isFetching) return;
+        if (pageCache[pageIndex]) return displayPage(pageIndex);
         setButtonsState(true);
 
         const wmContext = pageIndex > 0 ? pageCache[pageIndex - 1].data.json_data.wm_context : '';
-        const responseData = await fetchData(pageIndex, wmContext, tokenInput.value.trim());
+        // --- 修改: 直接使用后台缓存的 `parsedTokenCache` ---
+        const responseData = await fetchData(pageIndex, wmContext, parsedTokenCache);
 
         if (responseData?.code === 0) {
             pageCache[pageIndex] = responseData;
@@ -245,7 +244,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if(modal === debugPasswordModal) debugPasswordInput.value = '';
         }, 300);
     };
+
+    const showAlert = (message) => {
+        alertModalMessage.textContent = message;
+        openModal(alertModal);
+    };
     
+    const parseToken = (text) => {
+        const trimmedText = text.trim();
+        const match = trimmedText.match(/token\s*=\s*([^;&\s]+)/i);
+        return match ? match[1] : trimmedText;
+    };
+
     // --- 事件监听器 ---
     loginButton.addEventListener('click', handleLogin);
     passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
@@ -253,22 +263,38 @@ document.addEventListener('DOMContentLoaded', () => {
     
     customCoordsToggle.addEventListener('change', () => { customCoordsContainer.classList.toggle('active', customCoordsToggle.checked); });
     
+    // --- 修改: 粘贴时显示原文，但在后台解析并缓存 ---
     const handlePaste = (text) => {
-        const match = text.match(/token=([^;]+)/);
-        tokenInput.value = match?.[1] || text;
+        tokenInput.value = text; // 界面显示原文
+        parsedTokenCache = parseToken(text); // 后台解析并缓存
     };
     
     tokenInput.addEventListener('paste', (e) => { e.preventDefault(); handlePaste(e.clipboardData.getData('text')); });
+    
+    // 新增：监听输入框的手动输入，实时更新后台缓存的token
+    tokenInput.addEventListener('input', () => {
+        parsedTokenCache = parseToken(tokenInput.value);
+    });
+
     pasteTokenButton.addEventListener('click', async () => {
-        try { handlePaste(await navigator.clipboard.readText()); } 
-        catch (err) { alert('无法读取剪贴板，请手动粘贴。'); }
+        try { 
+            const text = await navigator.clipboard.readText();
+            handlePaste(text);
+        } catch (err) { 
+            showAlert('无法从剪贴板读取内容，请手动粘贴。'); 
+        }
+    });
+
+    clearTokenButton.addEventListener('click', () => {
+        tokenInput.value = '';
+        parsedTokenCache = ''; // 同时清空后台缓存
     });
 
     queryButton.addEventListener('click', async () => {
-        const token = tokenInput.value.trim();
-        if (!token) {
-            alert('错误：请输入您的Token后再进行查询！');
-            updateStatus("错误：Token不能为空。", "error"); return;
+        // --- 修改: 现在只需检查后台缓存的token即可 ---
+        if (!parsedTokenCache) {
+            showAlert('错误：Token无效或为空，请粘贴有效的Token或Cookie！');
+            updateStatus("错误：Token无效或为空。", "error"); return;
         }
         currentPageNum = 0; pageCache = [];
         merchantListDiv.innerHTML = '<p style="text-align: center; color: var(--text-muted);">正在准备查询...</p>';
@@ -297,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let msg = error.message || "发生未知错误。";
             if (error.code === 1) msg = "获取地理位置失败，您拒绝了请求。";
             updateStatus(msg, "error");
-            alert(msg);
+            showAlert(msg);
             queryButton.disabled = false;
         }
     });
@@ -305,7 +331,12 @@ document.addEventListener('DOMContentLoaded', () => {
     nextButton.addEventListener('click', () => fetchAndCachePage(currentPageNum + 1));
     prevButton.addEventListener('click', () => { if (currentPageNum > 0) displayPage(currentPageNum - 1); });
     
-    [qrCloseBtn, cancelLogoutBtn, cancelDebugBtn].forEach(btn => btn.onclick = () => closeModal(btn.closest('.modal')));
+    // --- 修复: 确保所有关闭按钮都能正确工作 ---
+    [qrCloseBtn, cancelLogoutBtn, cancelDebugBtn, closeAlertBtn].forEach(btn => {
+        if (btn) {
+            btn.onclick = () => closeModal(btn.closest('.modal'));
+        }
+    });
     confirmLogoutBtn.onclick = performLogout;
     
     confirmDebugBtn.addEventListener('click', () => {
@@ -316,7 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
             debugUnlockButton.style.backgroundColor = 'var(--success-color)';
             if(pageCache.length > 0) displayPage(currentPageNum);
         } else {
-            alert('密码错误！');
+            showAlert('调试密码错误！');
         }
         closeModal(debugPasswordModal);
     });
