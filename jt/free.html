@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美团订单状态查询 - Lemon</title>
+    <style>
+        :root {
+            --primary-color: #FFC107;
+            --primary-color-dark: #e0a800;
+            --secondary-color: #17a2b8;
+            --secondary-color-dark: #117a8b;
+            --background-color: #f7f8fa;
+            --container-bg: #ffffff;
+            --text-color: #2c3e50;
+            --text-secondary: #6c757d;
+            --border-color: #e9ecef;
+            --error-color: #d9534f;
+            --success-color: #5cb85c;
+            --info-color: #5bc0de;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 650px; 
+            width: 100%;
+            margin: 40px auto;
+            padding: 35px 40px;
+            background-color: var(--container-bg);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        #login-container { max-width: 400px; }
+        #login-container h2 { text-align: center; margin-bottom: 25px; font-size: 28px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-secondary); }
+        input[type="text"], input[type="password"] {
+            width: 100%; padding: 12px 15px; border: 1px solid var(--border-color);
+            border-radius: 8px; font-size: 16px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none; border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.25);
+        }
+        #login-error { color: var(--error-color); text-align: center; margin-top: 15px; min-height: 20px; font-size: 14px; }
+        .remember-me-group {
+            display: flex; align-items: center; margin-bottom: 20px; margin-top: -10px;
+        }
+        .remember-me-group input[type="checkbox"] { width: auto; margin-right: 8px; cursor: pointer; }
+        .remember-me-group label { margin-bottom: 0; color: var(--text-secondary); font-weight: 500; cursor: pointer; }
+
+        .header { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 10px; }
+        .header h2 { font-size: 28px; font-weight: 700; }
+        .header .icon { width: 32px; height: 32px; color: var(--primary-color); }
+        .container > p { text-align: center; color: var(--text-secondary); margin-bottom: 20px; }
+        
+        textarea { 
+            width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px; 
+            resize: vertical; font-family: inherit; font-size: 16px; min-height: 100px; 
+            transition: border-color 0.2s, box-shadow 0.2s; 
+        }
+        textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.25); }
+        
+        .primary-btn { 
+            width: 100%; padding: 14px 15px; background-image: linear-gradient(135deg, #ffd100 0%, #ffc107 100%); 
+            color: var(--text-color); font-size: 18px; border: none; border-radius: 8px; cursor: pointer; 
+            font-weight: 700; transition: all 0.2s ease-in-out; box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3); 
+            border-bottom: 2px solid var(--primary-color-dark); 
+        }
+        .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4); }
+        .primary-btn:active { transform: translateY(0); box-shadow: 0 2px 10px rgba(255, 193, 7, 0.3); border-bottom-width: 0; }
+        
+        .results-header { margin-top: 40px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; font-size: 20px; font-weight: 600; }
+        #response { padding: 0; min-height: 100px; }
+        
+        /* 列表样式 */
+        .order-list { list-style: none; padding: 0; }
+        .order-card { 
+            background-color: #fff; border: 1px solid var(--border-color); border-left: 5px solid var(--info-color); 
+            border-radius: 8px; padding: 15px 20px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
+            transition: all 0.2s ease-in-out; 
+        }
+        .order-card.success { border-left-color: var(--success-color); }
+        .order-card.error { border-left-color: var(--error-color); }
+        
+        .order-title { font-size: 18px; font-weight: 700; color: var(--text-color); margin-bottom: 10px; }
+        .status-item { 
+            display: flex; justify-content: space-between; align-items: center; 
+            font-size: 15px; padding: 5px 0; border-top: 1px dashed #eee; 
+            color: var(--text-secondary);
+        }
+        .status-item:first-child { border-top: none; }
+        .status-item .label { font-weight: 500; color: var(--text-secondary); width: 120px; flex-shrink: 0; }
+        .status-item .time { font-weight: 600; color: var(--text-color); }
+        
+        .no-result { text-align: center; color: var(--text-secondary); padding: 40px 20px; background-color: #fafafa; border: 2px dashed var(--border-color); border-radius: 8px; font-size: 16px; }
+        footer { text-align: center; margin-top: 30px; color: #b2bec3; font-size: 14px; }
+        
+        /* 调试区域样式 */
+        .debug-area { margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 20px; }
+        .collapsible-header { 
+            display: block; cursor: pointer; padding: 10px 0; font-weight: 600; 
+            color: var(--secondary-color); margin-bottom: 5px; 
+            transition: color 0.2s;
+        }
+        .collapsible-header:hover { color: var(--secondary-color-dark); }
+        .collapsible-content { 
+            display: none; 
+            max-height: 300px; 
+            overflow-y: auto; 
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .collapsible-content.expanded { display: block; }
+        .json-pre { 
+            white-space: pre-wrap; 
+            word-wrap: break-word; 
+            font-size: 12px; 
+            color: #333; 
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 登录界面 -->
+<div id="login-container" class="container">
+    <h2>用户登录</h2>
+    <div class="form-group">
+        <label for="username">账号</label>
+        <input type="text" id="username" placeholder="请输入您的账号">
+    </div>
+    <div class="form-group">
+        <label for="password">密码</label>
+        <input type="password" id="password" placeholder="请输入您的密码">
+    </div>
+    
+    <div class="form-group remember-me-group">
+        <input type="checkbox" id="remember-me">
+        <label for="remember-me">记住密码</label>
+    </div>
+    
+    <button class="primary-btn" id="login-btn">登录</button>
+    <p id="login-error"></p>
+</div>
+
+<!-- 主查询界面 (默认隐藏) -->
+<div id="main-container" class="container" style="display: none;">
+    <div class="header">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M21.218 15.71a1.001 1.001 0 0 0-1.07-1.07l-2.43 1.215-2.06-3.568-3.21-1.854 1.252-2.168a1 1 0 0 0-.5-1.866l-4-1A1 1 0 0 0 8 8.163v4.612l-4.79-2.766a1.002 1.002 0 0 0-1.378.373 1 1 0 0 0 .377 1.378l4.43 2.557-2.126 3.682a1.002 1.002 0 0 0 .208 1.403 1 1 0 0 0 1.402-.208l1.92-3.325L12 18.001v2a1 1 0 0 0 1.866.5l4-7a1.002 1.002 0 0 0-.648-1.791zm-9.352-5.768L14.4 11.52l-2.534 1.463v-3.05l-1-1.732zM12 16.08l-2.28-1.316.96-1.662L13 14.505l-1 1.575z"></path></svg>
+        <h2>美团订单状态查询</h2>
+    </div>
+    <p>粘贴您的 Token，查询最新的订单处理时间。</p>
+    
+    <div class="form-group">
+        <label for="token">用户TOKEN</label>
+        <textarea id="token" rows="4" placeholder="在此处粘贴您获取的Token值"></textarea>
+    </div>
+    <button class="primary-btn" id="query-btn">立即查询</button>
+    
+    <h3 class="results-header">查询结果 (最多显示最近 20 条)</h3>
+    <div id="response">
+        <p class="no-result">等待查询中...</p>
+    </div>
+    
+    <!-- 新增调试区域 -->
+    <div class="debug-area">
+        <a class="collapsible-header" onclick="toggleDebug(this, 'debug-step1')">▶ 步骤 1: UserID 原始响应 (点击展开)</a>
+        <div id="debug-step1" class="collapsible-content"></div>
+
+        <a class="collapsible-header" onclick="toggleDebug(this, 'debug-step2')">▶ 步骤 2: 订单列表 原始响应 (点击展开)</a>
+        <div id="debug-step2" class="collapsible-content"></div>
+
+        <a class="collapsible-header" onclick="toggleDebug(this, 'debug-step3')">▶ 步骤 3: 订单详情 原始响应 (点击展开)</a>
+        <div id="debug-step3" class="collapsible-content"></div>
+    </div>
+    
+    <footer>Crafted for simplicity and convenience by Lemon.</footer>
+</div>
+
+<script>
+    // 调试区域的开关函数
+    function toggleDebug(headerElement, contentId) {
+        const content = document.getElementById(contentId);
+        if (content) {
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                headerElement.innerHTML = '▶ ' + headerElement.innerHTML.substring(2);
+            } else {
+                content.classList.add('expanded');
+                headerElement.innerHTML = '▼ ' + headerElement.innerHTML.substring(2);
+            }
+        }
+    }
+</script>
+<script src="free.js"></script>
+</body>
+</html>
