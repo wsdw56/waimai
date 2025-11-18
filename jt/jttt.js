@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const paginationControls = document.getElementById('paginationControls');
     
     const qrModal = document.getElementById('qrModal');
+    const qrCodeImg = qrModal.querySelector('img'); // 确保这里有获取到img元素
     const qrCloseBtn = qrModal.querySelector('.close-btn');
     
     const confirmModal = document.getElementById('confirmModal');
@@ -97,23 +98,69 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchData(pageNum, wmContext, token) {
         updateStatus(`正在请求第 ${pageNum + 1} 页...`, "info");
+        
+        // --- 修改开始: 按照新的HTTP请求调整参数 ---
         const baseParams = new URLSearchParams({
-            notitlebar: '1', future: '2', scene_id: '179', entry: 'tiantianmiandan', wmUserIdDeregistration: '0', 
-            wmUuidDeregistration: '1', wm_appversion: '12.46.403', wm_ctype: 'mtandroid', userid: '5543192494', 
+            notitlebar: '1',
+            future: '2',
+            scene_id: '344', // 修改: 179 -> 344
+            entry: 'tuansousuo', // 修改: tiantianmiandan -> tuansousuo
+            wmUserIdDeregistration: '0',
+            wmUuidDeregistration: '1',
+            wm_appversion: '12.46.403',
+            wm_ctype: 'mtandroid',
+            userid: '4608246952', // 修改: 更新为请求中的ID
             uuid: '000000000000005100380EF384E64B6B41161CD779322A174200374470317960',
-            personalized: '1', platform: '4', wm_latitude: userLatitude, wm_actual_longitude: userLongitude,
-            content_personalized_switch: '0', ad_personalized_switch: '0', wm_visitid: '7fd0a8af-6278-4878-9fd4-17ad423cc5ac',
-            wm_dversion: '33_13', push_token: 'dpshddfdded7858bc51ace78bf56d28b8d2aatpu',
-            app: '0', wm_longitude: userLongitude, wm_actual_latitude: userLatitude,
-            wm_pwh: '1', f: 'android', version: '12.46.403', app_model: '0', wm_dtype: 'M2011K2C',
+            personalized: '1',
+            platform: '4',
+            wm_latitude: userLatitude, // 保持动态获取
+            wm_actual_longitude: userLongitude, // 保持动态获取
+            content_personalized_switch: '0',
+            ad_personalized_switch: '0',
+            wm_visitid: '94c8c0fa-cfbe-426c-bd64-45340113f779', // 修改: 更新为请求中的ID
+            wm_dversion: '33_13',
+            push_token: 'dpshddfdded7858bc51ace78bf56d28b8d2aatpu',
+            app: '0',
+            wm_longitude: userLongitude, // 保持动态获取
+            wm_actual_latitude: userLatitude, // 保持动态获取
+            wm_pwh: '1',
+            f: 'android',
+            version: '12.46.403',
+            app_model: '0',
+            wm_dtype: 'M2011K2C',
             wm_uuid: '000000000000005100380EF384E64B6B41161CD779322A174200374470317960',
-            partner: '4', utm_term: '1200460403', utm_campaign: 'AgroupBgroupC0D500E0Ghomepage',
-            region_id: '1000341300', region_version: '1763347289584', entry_channel: '2',
-            page_size: '10', filterInfo: '', sortType: '0', 
-            token, wm_logintoken: token, page_num: pageNum, wm_context: wmContext || '',
+            partner: '4',
+            utm_term: '1200460403',
+            utm_campaign: 'AgroupBgroupC0D200E0Ghomepage_search', // 修改: 更新campaign
+            ci: '157', // 新增
+            utm_medium: 'android', // 新增
+            utm_source: 'xiaomi', // 新增
+            region_id: '1000341300',
+            region_version: '1763486522063', // 修改
+            entry_channel: '2',
+            page_size: '10',
+            filterInfo: '',
+            sortType: '0',
+            clicked_poi_str: '', // 新增
+            clicked_poi_channel: '', // 新增
+            ad_page_type: '0', // 新增
+            token, // 保持动态
+            wm_logintoken: token, // 保持动态
+            page_num: pageNum, // 保持动态
+            wm_context: wmContext || '', // 保持动态
         });
+        // --- 修改结束 ---
+
         try {
-            const response = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: baseParams.toString() });
+            const response = await fetch(API_URL, { 
+                method: 'POST', 
+                headers: { 
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    // 浏览器会自动添加 Host, User-Agent, Origin 等头部，
+                    // 无需手动添加 Sec-Fetch-* 等头部
+                }, 
+                body: baseParams.toString() 
+            });
             if (!response.ok) throw new Error(`HTTP 错误! 状态: ${response.status}`);
             return await response.json();
         } catch (error) {
@@ -156,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         queryButton.disabled = loading;
         if (!loading) {
             prevButton.disabled = currentPageNum <= 0;
+            // 防止 pageCache[currentPageNum] 为空时报错
             const hasNextPage = pageCache[currentPageNum]?.data?.json_data?.page?.hasNextPage;
             nextButton.disabled = !hasNextPage;
         } else {
@@ -212,7 +260,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         moduleList.forEach(item => {
             try {
-                const adData = JSON.parse(JSON.parse(item.string_data).ad_data);
+                // 部分数据可能没有string_data或格式不同，添加保护
+                if (!item.string_data) return;
+                
+                const adDataObj = JSON.parse(item.string_data);
+                if (!adDataObj.ad_data) return;
+
+                const adData = JSON.parse(adDataObj.ad_data);
                 const { poi_name: name = '未知商家', distance = '未知距离', scheme } = adData;
                 if (!scheme) return;
                 merchantListDiv.insertAdjacentHTML('beforeend', `
@@ -238,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.classList.remove('show');
         setTimeout(() => { 
             modal.style.display = 'none'; 
-            if(modal === qrModal) qrCodeImg.src = '';
+            if(modal === qrModal && qrCodeImg) qrCodeImg.src = '';
             if(modal === debugPasswordModal) debugPasswordInput.value = '';
         }, 300);
     };
@@ -286,7 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
         queryButton.disabled = true;
         try {
             let lat, lon;
-            if (customCoordsToggle.checked) {
+            if (customCoordsToggle && customCoordsToggle.checked) {
                 lat = parseFloat(latitudeInput.value);
                 lon = parseFloat(longitudeInput.value);
                 if (isNaN(lat) || isNaN(lon)) throw new Error("自定义经纬度格式不正确。");
@@ -298,6 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 lon = pos.coords.longitude;
                 updateStatus(`位置获取成功: ${lat.toFixed(4)}, ${lon.toFixed(4)}`, "success");
             }
+            // 美团经纬度通常是 整数形式 (乘以 1,000,000)
             [userLatitude, userLongitude] = [Math.round(lat * 1e6), Math.round(lon * 1e6)];
             fetchAndCachePage(0);
             fetchAddress(lat, lon); 
@@ -362,8 +417,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 2000);
             });
         } else if (target.classList.contains('qr-code-btn')) {
-            qrCodeImg.src = `https://api.2dcode.biz/v1/create-qr-code?data=${encodeURIComponent(scheme)}&size=256`;
-            openModal(qrModal);
+            if(qrCodeImg) {
+                qrCodeImg.src = `https://api.2dcode.biz/v1/create-qr-code?data=${encodeURIComponent(scheme)}&size=256`;
+                openModal(qrModal);
+            } else {
+                console.error("QR Code Image element not found");
+            }
         }
     });
 
