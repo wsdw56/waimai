@@ -367,8 +367,8 @@ const App = {
     initSuperJumps: () => {
         const meituanBtn = document.getElementById("meituanSuperJumpBtn");
         const dianpingBtn = document.getElementById("dianpingSuperJumpBtn");
-        const meituanUrl = "imeituan://www.meituan.com/takeout/browser?inner_url=https%3A%2F%2Fadfec.meituan.com%2Fallowance%2Ffree%3Ft%3D1%26c%3D2%26p%3DeLhY-b9z3K4g%26notitlebar%3D1%26future%3D2%26scene_id%3D179%26entry%3Dtiantianmiandan";
-        const dianpingUrl = "dianping://waimai.dianping.com/takeout/browser?inner_url=https%3A%2F%2Fadfec.meituan.com%2Fallowance%2Ffree%3Ft%3D1%26c%3D2%26p%3DeLhY-b9z3K4g%26notitlebar%3D1%26future%3D2%26scene_id%3D179%26entry%3Dtiantianmiandan";
+        const meituanUrl = "imeituan://www.meituan.com/takeout/browser?inner_url=https%3a%2f%2fadfec.meituan.com%2fallowance%2ffree%3ft%3d1%26c%3d2%26p%3deLhY-b9z3K4g%26notitlebar%3d1%26future%3d2%26scene_id%3d344%26entry%3dtuansousuo";
+        const dianpingUrl = "dianping://waimai.dianping.com/takeout/browser?inner_url=https%3a%2f%2fadfec.meituan.com%2fallowance%2ffree%3ft%3d1%26c%3d2%26p%3deLhY-b9z3K4g%26notitlebar%3d1%26future%3d2%26scene_id%3d344%26entry%3dtuansousuo";
 
         if (meituanBtn) {
             meituanBtn.addEventListener("click", () => {
