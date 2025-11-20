@@ -109,15 +109,15 @@ document.addEventListener('DOMContentLoaded', () => {
             wmUuidDeregistration: '1',
             wm_appversion: '12.46.403',
             wm_ctype: 'mtandroid',
-            // userid: '4608246952', // 已删除
-            // uuid: '...', // 已删除
+            // userid: '4608246952', // <--- 已删除 userid
+            uuid: '000000000000005100380EF384E64B6B41161CD779322A174200374470317960',
             personalized: '1',
             platform: '4',
             wm_latitude: userLatitude, 
             wm_actual_longitude: userLongitude,
             content_personalized_switch: '0',
             ad_personalized_switch: '0',
-            wm_visitid: '94c8c0fa-cfbe-426c-bd64-45340113f779', // 访问ID通常是随机的，暂时保留，如果报错也可尝试删除
+            wm_visitid: '94c8c0fa-cfbe-426c-bd64-45340113f779',
             wm_dversion: '33_13',
             push_token: 'dpshddfdded7858bc51ace78bf56d28b8d2aatpu',
             app: '0',
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
             version: '12.46.403',
             app_model: '0',
             wm_dtype: 'M2011K2C',
-            // wm_uuid: '...', // 已删除
+            wm_uuid: '000000000000005100380EF384E64B6B41161CD779322A174200374470317960',
             partner: '4',
             utm_term: '1200460403',
             utm_campaign: 'AgroupBgroupC0D200E0Ghomepage_search',
