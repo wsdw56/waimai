@@ -691,8 +691,6 @@
           <button id="startBtn" class="btn-primary">开始测试</button>
         </div>
         
-
-        <!-- 这里是修改后的作者与群聊信息部分 -->
         <!-- 作者与互动信息卡片 -->
         <div style="margin-top: 3.5rem; padding: 24px; background: linear-gradient(180deg, #ffffff, #fbfdfb); border: 1px solid var(--line); border-radius: 18px; display: flex; flex-direction: column; align-items: center; gap: 18px; width: 100%; max-width: 480px; box-shadow: 0 8px 24px rgba(47, 73, 55, 0.04);">
           
@@ -711,11 +709,22 @@
 
             <!-- 加群按钮（用浅绿色背景区分） -->
             <a href="https://qm.qq.com/cgi-bin/qm/qr?k=FytznU8i4xmyqRHIwlHxQ7sGkCpczcSc&jump_from=webapi&authKey=4Mmaw8pwlHn9yCtCjNXULYJSsmvqH5OPlVY3b70v1uvVy/MZDI24Tkorl1g5/LLC" target="_blank" class="btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 12px; font-size: 14px; flex: 1; min-width: 160px; background: var(--soft); border-color: #d1e2d4;">
-              💬 点击加入SBTI聊天群
+              💬 点击加入交流群
             </a>
           </div>
-          
         </div>
+
+        <!-- 🌟 新增：二维码/Logo图片与隐藏文字部分 -->
+        <div style="margin-top: 32px; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+          <!-- 默认读取同级目录或指定目录下的 logo.png -->
+          <img src="logo.png" alt="微信扫码关注" style="width: 130px; height: 130px; object-fit: contain; border-radius: 14px; border: 1px solid var(--line); background: #ffffff; padding: 8px; box-shadow: 0 4px 16px rgba(47, 73, 55, 0.05);" />
+          <!-- 隐藏不明显的文字（降低透明度和字号） -->
+          <span style="font-size: 12px; color: var(--muted); opacity: 0.45; letter-spacing: 1px;">
+            更多好玩有趣的东西扫码关注公众号
+          </span>
+        </div>
+
+      </div>
     </section>
 
     <section id="test" class="screen">
