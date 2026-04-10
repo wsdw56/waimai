@@ -47,7 +47,7 @@ body {
 }
 
 .btn-highlight {
-    background: linear-gradient(to right, #FF7800, #FF5000);
+    background: linear-gradient(to right, #5bc8fa, #40bef8);
     color: white;
     padding: 12px 20px;
     border: none;
