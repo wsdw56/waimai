@@ -10,12 +10,25 @@
 <body>
     <div class="toast jump" id="globalToast"><span class="loading"></span>正在跳转...</div>
 
-    <div class="main-container">
-        <div class="header">
-            <h2>Lemon一站式神券合集</h2>
-            <p class="sub-title">公众号: Lemon羊毛日记</p>
-            <button class="btn btn-highlight" id="qrCodeBtn"><i class="fas fa-qrcode"></i> 扫码关注获取一手线报</button>
+<div class="main-container">
+    <div class="header">
+        <h2>Lemon一站式神券合集</h2>
+        <p class="sub-title">公众号: Lemon羊毛日记</p>
+        
+        <!-- 按钮容器 -->
+        <div class="button-group">
+            <!-- 原有的扫码按钮 -->
+            <button class="btn btn-highlight" id="qrCodeBtn">
+                <i class="fas fa-qrcode"></i> 扫码关注获取一手线报
+            </button>
+
+            <!-- 新增的跳转按钮 -->
+            <a href="sbti/index.html" class="btn btn-primary-action">
+                <i class="fas fa-external-link-alt"></i> 进入SBTI分会场
+            </a>
         </div>
+    </div>
+</div>
 
         <div class="link-parser">
             <input type="text" id="pasteBox" placeholder="请粘贴外卖店铺链接，自动识别店铺ID">
